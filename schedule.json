@@ -1,0 +1,65 @@
+{
+  "business_hours": {
+    "Monday":   "10:00-18:00",
+    "Tuesday":  "10:00-18:00",
+    "Wednesday":"10:00-18:00",
+    "Thursday": "10:00-18:00",
+    "Friday":   "10:00-18:00",
+    "Saturday": "Closed",
+    "Sunday":   "Closed"
+  },
+  "location": {
+    "address": "C/ de Rascanya, 13, Campanar, 46015 València, Valencia",
+    "city": "València",
+    "postal_code": "46015",
+    "country": "España",
+    "google_maps_url": "https://maps.app.goo.gl/fJAjM1chSUdjYxuBA",
+    "directions": "Estamos en Campanar, Valencia. Fácil acceso en transporte público con múltiples opciones de bus y metro.",
+    "landmarks": [
+      "Campanar (5 min caminando)",
+      "Pius XII (4 min caminando)",
+      "Vall de la Ballestera (2 min caminando)"
+    ],
+    "public_transport": {
+      "bus": [
+        {
+          "line": "C3",
+          "stop": "Campanar Pius XII",
+          "distance": "4 min caminando"
+        },
+        {
+          "line": "98, 99",
+          "stop": "Vall de la Ballestera - Pius XII",
+          "distance": "2 min caminando"
+        }
+      ],
+      "metro": [
+        {
+          "line": "Línea 1, 2",
+          "stop": "Campanar",
+          "distance": "5 min caminando"
+        }
+      ]
+    }
+  },
+  "parking": {
+    "available": true,
+    "options": [
+      {
+        "type": "Parking privado",
+        "location": "Av. de Pius XII, 2, Campanar, 46009 Valencia, Valencia",
+        "distance": "7 min caminando",
+        "cost": "4,15€/hora",
+        "hours": "24h"
+      },
+      {
+        "type": "Zona azul/blanca",
+        "location": "Calles cercanas",
+        "distance": "1-2 min caminando",
+        "cost": "1€/hora",
+        "hours": "9:00-20:00"
+      }
+    ],
+    "notes": "Recomendamos usar transporte público o parking público. La zona azul tiene limitación de tiempo."
+  }
+}

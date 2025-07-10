@@ -1,0 +1,437 @@
+{
+  "services": [
+    {
+      "category": "Pelo a Pelo",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Relleno En 2 Semanas",
+          "description": "Para Hacer El Relleno Tienes Que Tener Por Lo Menos 50% De Extensiones Iniciales",
+          "price_original_eur": 30.0,
+          "price_discounted_eur": 27.0,
+          "duration": "1h"
+        },
+        {
+          "name": "Relleno En 3 Semanas",
+          "description": "Para Hacer El Relleno Tienes Que Tener Por Lo Menos 30-40% De Extensiones Iniciales",
+          "price_original_eur": 40.0,
+          "price_discounted_eur": 36.0,
+          "duration": "1h 30min"
+        },
+        {
+          "name": "Primera Puesta",
+          "price_original_eur": 50.0,
+          "price_discounted_eur": 45.0,
+          "duration": "1h 30min"
+        }
+      ]
+    },
+    {
+      "category": "Tinte de cejas + depilación Cejas Pobladas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Tinte + Depilación Cejas Pobladas",
+          "price_original_eur": 20.0,
+          "price_discounted_eur": 18.0,
+          "duration": "30min"
+        },
+        {
+          "name": "Tinte + Depilación Cejas Pobladas",
+          "price_original_eur": 25.0,
+          "price_discounted_eur": 22.5,
+          "duration": "40min"
+        }
+      ]
+    },
+    {
+      "category": "Pack3: Corte de pelo + Manicura + Tinte de cejas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 76.0,
+      "price_discounted_eur": 68.4,
+      "duration": "2h 45min",
+      "includes": [
+        "Corte Mujer (Incluye Lavado, Mascarilla y Secado)",
+        "Manicura Rusa + Esmalte Semipermanente",
+        "Tinte de Cejas + Depilación Cejas Pobladas"
+      ]
+    },
+    {
+      "category": "Pack2: Manicura + Lifting Pestañas + Laminado cejas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 108.0,
+      "price_discounted_eur": 97.2,
+      "duration": "4h",
+      "includes": [
+        "Manicura Rusa + Esmalte Semipermanente",
+        "Laminado de Cejas",
+        "Lifting de Pestañas"
+      ]
+    },
+    {
+      "category": "Pack1: Extensiones Pestañas + Manicura + Tinte Cejas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 90.0,
+      "price_discounted_eur": 81.0,
+      "duration": "3h 35min",
+      "includes": [
+        "Manicura Rusa + Esmalte Semipermanente",
+        "Tinte de Cejas + Depilación Cejas Pobladas",
+        "Pelo a Pelo"
+      ]
+    },
+    {
+      "category": "Volumen Ruso 2-5D",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Relleno En 2 Semanas (Con Abanicos Premontados)",
+          "price_original_eur": 35.0,
+          "price_discounted_eur": 31.5,
+          "duration": "1h 15min"
+        },
+        {
+          "name": "Relleno En 2 Semanas (Con Abanicos Hechos a Mano)",
+          "price_original_eur": 40.0,
+          "price_discounted_eur": 36.0,
+          "duration": "1h 20min"
+        },
+        {
+          "name": "Relleno En 3 Semanas",
+          "price_original_eur": 45.0,
+          "price_discounted_eur": 40.5,
+          "duration": "1h 40min"
+        },
+        {
+          "name": "Con Fibras Tecnológicas / Abanicos Premontados",
+          "price_original_eur": 55.0,
+          "price_discounted_eur": 49.5,
+          "duration": "1h 50min"
+        },
+        {
+          "name": "Relleno En 3 Semanas Con Abanicos Hechos a Mano",
+          "price_original_eur": 50.0,
+          "price_discounted_eur": 45.0,
+          "duration": "2h"
+        },
+        {
+          "name": "Con Abanicos Hechos a Mano",
+          "price_original_eur": 60.0,
+          "price_discounted_eur": 54.0,
+          "duration": "2h 15min"
+        }
+      ]
+    },
+    {
+      "category": "Manicura Rusa + Esmalte Semipermanente",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Manicura Higiénica (Sin Esmalte)",
+          "price_original_eur": 28.0,
+          "price_discounted_eur": 25.2,
+          "duration": "1h"
+        },
+        {
+          "name": "Manicura Higiénica (Sin Esmalte) — TOP MASTER Tatiana",
+          "price_original_eur": 35.0,
+          "price_discounted_eur": 31.5,
+          "duration": "1h 30min"
+        },
+        {
+          "name": "Sin Refuerzo",
+          "price_original_eur": 35.0,
+          "price_discounted_eur": 31.5,
+          "duration": "1h 35min"
+        },
+        {
+          "name": "Con Refuerzo",
+          "price_original_eur": 42.0,
+          "price_discounted_eur": 37.8,
+          "duration": "2h 10min"
+        },
+        {
+          "name": "Diseño Francesa — TOP MASTER Tatiana",
+          "price_original_eur": 60.0,
+          "price_discounted_eur": 54.0,
+          "duration": "2h 30min"
+        },
+        {
+          "name": "Con Refuerzo — TOP MASTER Tatiana (Incluye Retirado, Arreglos, Refuerzo)",
+          "price_original_eur": 50.0,
+          "price_discounted_eur": 45.0,
+          "duration": "2h 30min",
+          "price_note": "desde"
+        },
+        {
+          "name": "Diseño Francesa",
+          "price_original_eur": 49.0,
+          "price_discounted_eur": 44.1,
+          "duration": "2h 35min"
+        }
+      ]
+    },
+    {
+      "category": "Retirar Esmalte De Otro Centro",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 5.0,
+      "price_discounted_eur": 4.5,
+      "duration": "10min"
+    },
+    {
+      "category": "Pedicura",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Pedicura Completa + Esmalte",
+          "price_original_eur": 45.0,
+          "price_discounted_eur": 40.5,
+          "duration": "1h 30min"
+        },
+        {
+          "name": "Pedicura Higiénica Sin Esmalte",
+          "price_original_eur": 35.0,
+          "price_discounted_eur": 31.5,
+          "duration": "1h"
+        }
+      ]
+    },
+    {
+      "category": "Extensión de Uñas (Gel)",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Relleno en 3-4 Semanas — Uñas Gel Cortas",
+          "price_original_eur": 42.0,
+          "price_discounted_eur": 37.8,
+          "duration": "2h 30min"
+        },
+        {
+          "name": "Extensiones Uñas Gel Cortas",
+          "price_original_eur": 55.0,
+          "price_discounted_eur": 49.5,
+          "duration": "2h 30min"
+        },
+        {
+          "name": "Relleno en 3-4 Semanas — Uñas Gel TOP MASTER Tatiana",
+          "price_original_eur": 50.0,
+          "price_discounted_eur": 45.0,
+          "duration": "2h 30min",
+          "price_note": "desde"
+        },
+        {
+          "name": "Relleno en 3-4 Semanas — Uñas Gel Largas",
+          "price_original_eur": 42.0,
+          "price_discounted_eur": 37.8,
+          "duration": "2h 40min"
+        },
+        {
+          "name": "Extensiones Uñas Gel Largas",
+          "price_original_eur": 65.0,
+          "price_discounted_eur": 58.5,
+          "duration": "3h"
+        },
+        {
+          "name": "Extensiones Uñas Gel TOP MASTER Tatiana",
+          "price_original_eur": 75.0,
+          "price_discounted_eur": 67.5,
+          "duration": "3h"
+        }
+      ]
+    },
+    {
+      "category": "Extensiones Efecto Mojado",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Relleno en 3 Semanas — Extensiones Efecto Mojado",
+          "price_original_eur": 45.0,
+          "price_discounted_eur": 40.5,
+          "duration": "1h 40min"
+        },
+        {
+          "name": "Extensiones Efecto Mojado",
+          "price_original_eur": 55.0,
+          "price_discounted_eur": 49.5,
+          "duration": "1h 50min"
+        }
+      ]
+    },
+    {
+      "category": "Oferta 3 en 1 por 49€ Extensiones",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 49.0,
+      "price_discounted_eur": 44.1,
+      "duration": "2h",
+      "includes": [
+        "Botox De Pestañas o Cejas (Tratamiento Nutritivo)",
+        "Depilación De Cejas Cejas Pobladas",
+        "Pelo A Pelo"
+      ]
+    },
+    {
+      "category": "Extensiones de Pestañas inferiores",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 10.0,
+      "price_discounted_eur": 9.0,
+      "duration": "15min"
+    },
+    {
+      "category": "Extensiones solo puntas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 30.0,
+      "price_discounted_eur": 27.0,
+      "duration": "45min"
+    },
+    {
+      "category": "Extensiones Exprés",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 35.0,
+      "price_discounted_eur": 31.5,
+      "duration": "45min",
+      "notes": "Aplicación rápida; no se rellena el 100 % de pestañas."
+    },
+    {
+      "category": "Retirar extensiones del otro centro",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Casos Fáciles",
+          "price_original_eur": 5.0,
+          "price_discounted_eur": 4.5,
+          "duration": "15min"
+        },
+        {
+          "name": "Casos Difíciles (Pegotes)",
+          "price_original_eur": 10.0,
+          "price_discounted_eur": 9.0,
+          "duration": "30min",
+          "price_note": "desde"
+        }
+      ]
+    },
+    {
+      "category": "Laminado de cejas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 40.0,
+      "price_discounted_eur": 36.0,
+      "duration": "1h 15min"
+    },
+    {
+      "category": "Aclarado y tinte de cejas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 35.0,
+      "price_discounted_eur": 31.5,
+      "duration": "1h 15min"
+    },
+    {
+      "category": "Decoloración de cejas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 10.0,
+      "price_discounted_eur": 9.0,
+      "duration": "20min"
+    },
+    {
+      "category": "Tinte de cejas (sin depilación)",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 15.0,
+      "price_discounted_eur": 13.5,
+      "duration": "30min"
+    },
+    {
+      "category": "Botox de Pestañas o Cejas (tratamiento nutritivo)",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 5.0,
+      "price_discounted_eur": 4.5,
+      "duration": "10min"
+    },
+    {
+      "category": "Depilación de cejas — Cejas Pobladas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 10.0,
+      "price_discounted_eur": 9.0,
+      "duration": "20min"
+    },
+    {
+      "category": "Tinte de cejas + Depilación Cejas Pobladas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Tinte + Depilación Cejas Pobladas",
+          "price_original_eur": 20.0,
+          "price_discounted_eur": 18.0,
+          "duration": "30min"
+        },
+        {
+          "name": "Tinte + Depilación Cejas Pobladas",
+          "price_original_eur": 25.0,
+          "price_discounted_eur": 22.5,
+          "duration": "40min"
+        }
+      ]
+    },
+    {
+      "category": "Depilación cejas — Poco Pobladas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 5.0,
+      "price_discounted_eur": 4.5,
+      "duration": "10min"
+    },
+    {
+      "category": "Depilacion bigotes",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 5.0,
+      "price_discounted_eur": 4.5,
+      "duration": "10min"
+    },
+    {
+      "category": "Lifting de pestañas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "variants": [
+        {
+          "name": "Lifting de Pestañas",
+          "price_original_eur": 45.0,
+          "price_discounted_eur": 40.5,
+          "duration": "1h 15min"
+        },
+        {
+          "name": "Lifting Oferta de Noviembre",
+          "price_original_eur": 45.0,
+          "price_discounted_eur": 40.5,
+          "duration": "1h 15min"
+        },
+        {
+          "name": "Opción 3",
+          "price_original_eur": 45.0,
+          "price_discounted_eur": 40.5,
+          "duration": "1h 15min",
+          "price_note": "desde"
+        },
+        {
+          "name": "BONO 3 Servicios Lifting de Pestañas",
+          "price_original_eur": 115.0,
+          "price_discounted_eur": 103.5,
+          "duration": "1h 15min"
+        }
+      ]
+    },
+    {
+      "category": "Combo Lifting de pestañas + Laminado de cejas",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 72.0,
+      "price_discounted_eur": 64.8,
+      "duration": "2h 30min",
+      "includes": [
+        "Laminado de Cejas",
+        "Lifting de Pestañas"
+      ]
+    },
+    {
+      "category": "Lifting pestañas inferiores",
+      "url": "https://booksy.com/es-es/107815_top-pestanas_cejas-y-pestanas_58087_valencia",
+      "price_original_eur": 15.0,
+      "price_discounted_eur": 13.5,
+      "duration": "20min"
+    }
+  ]
+}

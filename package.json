@@ -1,0 +1,34 @@
+{
+  "name": "voice-salon-bot",
+  "version": "1.0.0",
+  "description": "Voice-driven salon bot backend for TopPestanas using Vapi.ai",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "voice",
+    "salon",
+    "bot",
+    "vapi",
+    "twilio",
+    "beauty"
+  ],
+  "author": "TopPestanas",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+} 
