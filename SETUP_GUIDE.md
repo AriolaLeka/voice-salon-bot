@@ -39,7 +39,7 @@ Your voice bot backend is **100% complete and ready to deploy**! Here's what we'
 git init
 git add .
 git commit -m "Initial commit"
-git remote add origin https://github.com/yourusername/voice-salon-bot.git
+git remote add origin https://github.com/AriolaLeka/voice-salon-bot
 git push -u origin main
 
 # 2. Deploy to Render
