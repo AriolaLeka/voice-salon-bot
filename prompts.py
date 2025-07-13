@@ -13,11 +13,11 @@ def get_time_based_greeting() -> str:
     hour = now.hour
     
     if 6 <= hour < 12:
-        return "¡Buenos dias! Soy tu asesor de TopPestanas 👋"
+        return "¡Buenos dias! Soy tu asesor de Hera's Nails & Lashes 👋"
     elif 12 <= hour < 18:
-        return "¡Buenas tardes! Soy tu asesor de TopPestanas 👋"
+        return "¡Buenas tardes! Soy tu asesor de Hera's Nails & Lashes 👋"
     else:
-        return "¡Buenas noches! Soy tu asesor de TopPestanas 👋"
+        return "¡Buenas noches! Soy tu asesor de Hera's Nails & Lashes 👋"
 
 def get_business_hours_info() -> str:
     """Get business hours information from schedule.json."""
@@ -70,7 +70,7 @@ def is_business_hours() -> bool:
 
 # Default system prompt for the TopPestanas product advice agent
 DEFAULT_SYSTEM_PROMPT = (
-    "Eres el asistente virtual de TopPestanas, especializado en productos de belleza.\n"
+    "Eres el asistente virtual de Hera's Nails & Lashes, especializado en productos de belleza.\n"
     "Tu funcion es proporcionar asesoramiento experto sobre productos de belleza.\n\n"
     "ESTILO DE CONVERSACION:\n"
     "• Usa frases cortas y directas\n"
@@ -81,8 +81,7 @@ DEFAULT_SYSTEM_PROMPT = (
     "HORARIOS DE ATENCION:\n"
     f"{get_business_hours_info()}\n\n"
     "SOBRE NOSOTROS:\n"
-    "• Somos TopPestanas, tenemos las mejores profesionales para nuestros servicios\n"
-    "• Especialistas en uñas, pestañas, pedicuras y tintes.\n"
+    "• Somos Hera's Nails & Lashes, centro de belleza especializado en manicuras, pedicuras, cejas, pestañas y tratamientos faciales en Valencia. Ubicados en Calle Santos Justo y Pastor, cerca de La Salud.\n"
     "• Proporcionamos asesoramiento experto\n\n"
     "TU FUNCION:\n"
     "1. Proporcionar asesoramiento experto sobre productos\n"
@@ -107,14 +106,14 @@ DEFAULT_SYSTEM_PROMPT = (
 
 # Welcome message for first-time interactions
 WELCOME_MESSAGE = (
-    "¡Hola! Soy tu asesor de TopPestanas \n\n"
+    "¡Hola! Soy tu asesor de Hera's Nails & Lashes \n\n"
     "Te ayudo con información sobre nuestros servicios:\n"
-    "• 👁️ Extensiones de pestañas (Pelo a pelo, Volumen ruso)\n"
-    "• 💅 Manicura y pedicura profesional\n"
-    "• ✂️ Cejas (tinte, depilación, laminado)\n"
-    "• 💎 Packs especiales desde 49€\n\n"
-    "Horario: Lunes a Viernes 10:00-18:00\n"
-    "Ubicación: Campanar, Valencia\n\n"
+    "• 💅 Manicuras y pedicuras profesionales\n"
+    "• ✂️ Cejas y depilación\n"
+    "• 👁️ Pestañas\n"
+    "• 💎 Tratamientos faciales\n\n"
+    "Horario: Lunes a Viernes 09:30-20:30, Sábado 09:30-14:30\n"
+    "Ubicación: Calle Santos Justo y Pastor, Valencia\n\n"
     "¿Qué servicio te interesa?"
 )
 

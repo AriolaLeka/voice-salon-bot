@@ -1,6 +1,6 @@
-# TopPestanas Voice Bot API
+# Hera's Nails & Lashes Voice Bot API
 
-A Node.js backend API for the TopPestanas voice-driven salon bot, designed to work with Vapi.ai for voice interactions.
+A Node.js backend API for the Hera's Nails & Lashes voice-driven salon bot, designed to work with Vapi.ai for voice interactions.
 
 ## 🏗️ Architecture
 
@@ -161,7 +161,7 @@ In your Vapi.ai agent, create these external functions:
 Use this system prompt in your Vapi.ai agent:
 
 ```
-Eres el asistente virtual de TopPestanas, especializado en servicios de belleza.
+Eres el asistente virtual de Hera's Nails & Lashes, especializado en servicios de belleza.
 Tu función es proporcionar información sobre nuestros servicios.
 
 ESTILO DE CONVERSACIÓN:
@@ -176,9 +176,7 @@ Lunes a Viernes: 10:00-18:00
 Sábado y Domingo: Cerrado
 
 SOBRE NOSOTROS:
-• Somos TopPestanas, tenemos las mejores profesionales
-• Especialistas en uñas, pestañas, pedicuras y tintes
-• Ubicados en Campanar, Valencia
+• Somos Hera's Nails & Lashes, centro de belleza especializado en manicuras, pedicuras, cejas, pestañas y tratamientos faciales en Valencia. Ubicados en Calle Santos Justo y Pastor, cerca de La Salud.
 
 TU FUNCIÓN:
 1. Proporcionar información sobre servicios
@@ -323,4 +321,4 @@ For issues or questions:
 
 ---
 
-**TopPestanas Voice Bot API** - Powered by Vapi.ai & Node.js 
+**Hera's Nails & Lashes API** - Powered by Vapi.ai & Node.js 

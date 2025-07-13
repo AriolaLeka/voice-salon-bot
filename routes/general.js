@@ -71,17 +71,17 @@ router.get('/about', async (req, res) => {
     res.json({
       success: true,
       data: {
-        business_name: "TopPestanas",
-        description: "Somos TopPestanas, tenemos las mejores profesionales para nuestros servicios. Especialistas en uñas, pestañas, pedicuras y tintes.",
+        business_name: "Hera's Nails & Lashes",
+        description: "Centro de belleza especializado en manicuras, pedicuras, cejas, pestañas y tratamientos faciales en Valencia. Ubicados en Calle Santos Justo y Pastor, cerca de La Salud.",
         services_summary: [
-          "Extensiones de pestañas",
-          "Manicura y pedicura profesional",
-          "Tintes y depilación de cejas",
-          "Laminado de cejas",
-          "Packs especiales"
+          "Manicuras",
+          "Pedicuras",
+          "Cejas y Depilación",
+          "Pestañas",
+          "Faciales"
         ],
         location: scheduleData.location.address,
-        hours_summary: "Lunes a Viernes 10:00-18:00, Cerrado sábados y domingos"
+        hours_summary: "Lunes a Viernes 09:30-20:30, Sábado 09:30-14:30, Cerrado domingos"
       }
     });
   } catch (error) {
@@ -148,7 +148,7 @@ router.get('/contact', async (req, res) => {
     res.json({
       success: true,
       data: {
-        business_name: "TopPestanas",
+        business_name: "Hera's Nails & Lashes",
         address: scheduleData.location.address,
         city: scheduleData.location.city,
         postal_code: scheduleData.location.postal_code,
@@ -228,11 +228,11 @@ function getTimeBasedGreeting() {
   const hour = new Date().getHours();
   
   if (6 <= hour && hour < 12) {
-    return "¡Buenos días! Soy tu asesor de TopPestanas 👋";
+    return "¡Buenos días! Soy tu asesor de Hera's Nails & Lashes 👋";
   } else if (12 <= hour && hour < 18) {
-    return "¡Buenas tardes! Soy tu asesor de TopPestanas 👋";
+    return "¡Buenas tardes! Soy tu asesor de Hera's Nails & Lashes 👋";
   } else {
-    return "¡Buenas noches! Soy tu asesor de TopPestanas 👋";
+    return "¡Buenas noches! Soy tu asesor de Hera's Nails & Lashes 👋";
   }
 }
 
