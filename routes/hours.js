@@ -169,22 +169,7 @@ router.get('/week', async (req, res) => {
   }
 });
 
-// Helper function to get hours summary (legacy - now using utils)
-function getHoursSummary(businessHours) {
-  const openDays = Object.entries(businessHours)
-    .filter(([day, hours]) => hours !== 'Closed')
-    .map(([day, hours]) => `${day}: ${hours}`);
-  
-  const closedDays = Object.entries(businessHours)
-    .filter(([day, hours]) => hours === 'Closed')
-    .map(([day]) => day);
 
-  return {
-    open_days: openDays,
-    closed_days: closedDays,
-    summary: `Abierto de lunes a viernes de 10:00 a 18:00. Cerrado sábados y domingos.`
-  };
-}
 
 // Helper function to get next open day
 function getNextOpenDay(businessHours, currentDay) {
