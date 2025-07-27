@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
-const { detectLanguage, getBusinessStatusMessage, getHoursSummary } = require('../utils/languageUtils');
+const { detectLanguage, getBusinessStatusMessage, getHoursSummary, getNextOpenDay } = require('../utils/languageUtils');
 
 // Load schedule data
 let scheduleData = null;
@@ -171,23 +171,6 @@ router.get('/week', async (req, res) => {
 
 
 
-// Helper function to get next open day
-function getNextOpenDay(businessHours, currentDay) {
-  const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const currentIndex = weekDays.indexOf(currentDay);
-  
-  for (let i = 1; i <= 7; i++) {
-    const nextDayIndex = (currentIndex + i) % 7;
-    const nextDay = weekDays[nextDayIndex];
-    if (businessHours[nextDay] && businessHours[nextDay] !== 'Closed') {
-      return {
-        day: nextDay,
-        hours: businessHours[nextDay]
-      };
-    }
-  }
-  
-  return null;
-}
+
 
 module.exports = router; 

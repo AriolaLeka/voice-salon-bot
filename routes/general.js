@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
-const { detectLanguage, getTimeBasedGreeting, getWelcomeMessage } = require('../utils/languageUtils');
+const { detectLanguage, getTimeBasedGreeting, getWelcomeMessage, getPriceRange, getNextOpenDay } = require('../utils/languageUtils');
 
 // Load data
 let salonData = null;
@@ -230,50 +230,6 @@ router.get('/status', async (req, res) => {
   }
 });
 
-// Helper function to get time-based greeting
-function getTimeBasedGreeting() {
-  const hour = new Date().getHours();
-  
-  if (6 <= hour && hour < 12) {
-    return "¡Buenos días! Soy tu asesor de Hera's Nails & Lashes 👋";
-  } else if (12 <= hour && hour < 18) {
-    return "¡Buenas tardes! Soy tu asesor de Hera's Nails & Lashes 👋";
-  } else {
-    return "¡Buenas noches! Soy tu asesor de Hera's Nails & Lashes 👋";
-  }
-}
 
-// Helper function to get price range for a service
-function getPriceRange(service) {
-  if (service.variants && service.variants.length > 0) {
-    const prices = service.variants.map(v => v.price_discounted_eur || v.price_original_eur);
-    return {
-      min: Math.min(...prices),
-      max: Math.max(...prices)
-    };
-  } else {
-    const price = service.price_discounted_eur || service.price_original_eur;
-    return { min: price, max: price };
-  }
-}
-
-// Helper function to get next open day
-function getNextOpenDay(businessHours, currentDay) {
-  const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const currentIndex = weekDays.indexOf(currentDay);
-  
-  for (let i = 1; i <= 7; i++) {
-    const nextDayIndex = (currentIndex + i) % 7;
-    const nextDay = weekDays[nextDayIndex];
-    if (businessHours[nextDay] && businessHours[nextDay] !== 'Closed') {
-      return {
-        day: nextDay,
-        hours: businessHours[nextDay]
-      };
-    }
-  }
-  
-  return null;
-}
 
 module.exports = router; 

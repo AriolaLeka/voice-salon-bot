@@ -145,11 +145,46 @@ function getHoursSummary(businessHours, language = 'en') {
   }
 }
 
+// Helper function to get price range for a service
+function getPriceRange(service) {
+  if (service.variants && service.variants.length > 0) {
+    const prices = service.variants.map(v => v.price_discounted_eur || v.price_original_eur);
+    return {
+      min: Math.min(...prices),
+      max: Math.max(...prices)
+    };
+  } else {
+    const price = service.price_discounted_eur || service.price_original_eur;
+    return { min: price, max: price };
+  }
+}
+
+// Helper function to get next open day
+function getNextOpenDay(businessHours, currentDay) {
+  const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const currentIndex = weekDays.indexOf(currentDay);
+  
+  for (let i = 1; i <= 7; i++) {
+    const nextDayIndex = (currentIndex + i) % 7;
+    const nextDay = weekDays[nextDayIndex];
+    if (businessHours[nextDay] && businessHours[nextDay] !== 'Closed') {
+      return {
+        day: nextDay,
+        hours: businessHours[nextDay]
+      };
+    }
+  }
+  
+  return null;
+}
+
 module.exports = {
   detectLanguage,
   getTimeBasedGreeting,
   getBusinessStatusMessage,
   translateServiceCategory,
   getWelcomeMessage,
-  getHoursSummary
+  getHoursSummary,
+  getPriceRange,
+  getNextOpenDay
 }; 
