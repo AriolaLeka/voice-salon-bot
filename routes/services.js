@@ -62,20 +62,61 @@ router.get('/search', async (req, res) => {
     }
 
     const data = await loadSalonData();
+    const language = detectLanguage(req);
     const searchTerm = query.toLowerCase();
     
-    const results = data.services.filter(service => 
-      service.category.toLowerCase().includes(searchTerm) ||
-      (service.variants && service.variants.some(variant => 
-        variant.name.toLowerCase().includes(searchTerm)
-      ))
-    );
+    // Create search mappings for both languages
+    const searchMappings = {
+      'manicure': ['manicuras', 'manicura'],
+      'manicures': ['manicuras', 'manicura'],
+      'pedicure': ['pedicuras', 'pedicura'],
+      'pedicures': ['pedicuras', 'pedicura'],
+      'eyebrows': ['cejas', 'ceja'],
+      'eyebrow': ['cejas', 'ceja'],
+      'eyelashes': ['pestañas', 'pestaña'],
+      'eyelash': ['pestañas', 'pestaña'],
+      'facial': ['faciales', 'facial'],
+      'facials': ['faciales', 'facial'],
+      'nails': ['uñas', 'uña', 'manicuras', 'pedicuras'],
+      'nail': ['uñas', 'uña', 'manicuras', 'pedicuras']
+    };
+    
+    // Get search terms including translations
+    let searchTerms = [searchTerm];
+    if (searchMappings[searchTerm]) {
+      searchTerms = searchTerms.concat(searchMappings[searchTerm]);
+    }
+    
+    const results = data.services.filter(service => {
+      const categoryLower = service.category.toLowerCase();
+      
+      // Check if any search term matches the category
+      const categoryMatch = searchTerms.some(term => categoryLower.includes(term));
+      
+      // Check if any search term matches variant names
+      const variantMatch = service.variants && service.variants.some(variant => 
+        searchTerms.some(term => variant.name.toLowerCase().includes(term))
+      );
+      
+      return categoryMatch || variantMatch;
+    });
+
+    // Translate categories for response if needed
+    const translatedResults = results.map(service => ({
+      ...service,
+      category: translateServiceCategory(service.category, language)
+    }));
 
     res.json({
       success: true,
       query: searchTerm,
-      data: results,
-      total: results.length
+      search_terms_used: searchTerms,
+      data: translatedResults,
+      total: translatedResults.length,
+      debug: {
+        original_search: query,
+        available_categories: data.services.map(s => s.category)
+      }
     });
   } catch (error) {
     console.error('Error searching services:', error);
@@ -176,6 +217,66 @@ router.get('/price-range/:min/:max', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Error fetching services by price range'
+    });
+  }
+});
+
+// GET /api/services/test-search - Test search functionality
+router.get('/test-search/:term', async (req, res) => {
+  try {
+    const { term } = req.params;
+    const data = await loadSalonData();
+    const searchTerm = term.toLowerCase();
+    
+    // Create search mappings for both languages
+    const searchMappings = {
+      'manicure': ['manicuras', 'manicura'],
+      'manicures': ['manicuras', 'manicura'],
+      'pedicure': ['pedicuras', 'pedicura'],
+      'pedicures': ['pedicuras', 'pedicura'],
+      'eyebrows': ['cejas', 'ceja'],
+      'eyebrow': ['cejas', 'ceja'],
+      'eyelashes': ['pestañas', 'pestaña'],
+      'eyelash': ['pestañas', 'pestaña'],
+      'facial': ['faciales', 'facial'],
+      'facials': ['faciales', 'facial'],
+      'nails': ['uñas', 'uña', 'manicuras', 'pedicuras'],
+      'nail': ['uñas', 'uña', 'manicuras', 'pedicuras']
+    };
+    
+    // Get search terms including translations
+    let searchTerms = [searchTerm];
+    if (searchMappings[searchTerm]) {
+      searchTerms = searchTerms.concat(searchMappings[searchTerm]);
+    }
+    
+    const results = data.services.filter(service => {
+      const categoryLower = service.category.toLowerCase();
+      
+      // Check if any search term matches the category
+      const categoryMatch = searchTerms.some(term => categoryLower.includes(term));
+      
+      // Check if any search term matches variant names
+      const variantMatch = service.variants && service.variants.some(variant => 
+        searchTerms.some(term => variant.name.toLowerCase().includes(term))
+      );
+      
+      return categoryMatch || variantMatch;
+    });
+
+    res.json({
+      success: true,
+      search_term: searchTerm,
+      search_terms_used: searchTerms,
+      available_categories: data.services.map(s => s.category),
+      results: results,
+      total: results.length
+    });
+  } catch (error) {
+    console.error('Error testing search:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error testing search'
     });
   }
 });
