@@ -159,6 +159,17 @@ function getPriceRange(service) {
   }
 }
 
+// Helper function to get price range text for voice responses
+function getPriceRangeText(service, language = 'en') {
+  const priceRange = getPriceRange(service);
+  
+  if (priceRange.min === priceRange.max) {
+    return language === 'es' ? `${priceRange.min}€` : `${priceRange.min}€`;
+  } else {
+    return language === 'es' ? `desde ${priceRange.min}€ hasta ${priceRange.max}€` : `from ${priceRange.min}€ to ${priceRange.max}€`;
+  }
+}
+
 // Helper function to get next open day
 function getNextOpenDay(businessHours, currentDay) {
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -186,5 +197,6 @@ module.exports = {
   getWelcomeMessage,
   getHoursSummary,
   getPriceRange,
+  getPriceRangeText,
   getNextOpenDay
 }; 

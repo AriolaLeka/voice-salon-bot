@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
-const { detectLanguage, translateServiceCategory } = require('../utils/languageUtils');
+const { detectLanguage, translateServiceCategory, getPriceRangeText } = require('../utils/languageUtils');
 
 // Load salon data
 let salonData = null;
@@ -27,19 +27,37 @@ router.get('/', async (req, res) => {
     const data = await loadSalonData();
     const language = detectLanguage(req);
     
-    const services = data.services.map(service => ({
-      category: translateServiceCategory(service.category, language),
-      price_original_eur: service.price_original_eur,
-      price_discounted_eur: service.price_discounted_eur,
-      duration: service.duration,
-      includes: service.includes,
-      variants: service.variants ? service.variants.length : 0
-    }));
+    // Create voice-friendly service summaries
+    const serviceSummaries = data.services.map(service => {
+      const category = translateServiceCategory(service.category, language);
+      const variantCount = service.variants ? service.variants.length : 0;
+      
+      if (language === 'es') {
+        return {
+          category: category,
+          summary: `${category} con ${variantCount} opciones disponibles`,
+          price_range: getPriceRangeText(service, 'es'),
+          variants_count: variantCount
+        };
+      } else {
+        return {
+          category: category,
+          summary: `${category} with ${variantCount} options available`,
+          price_range: getPriceRangeText(service, 'en'),
+          variants_count: variantCount
+        };
+      }
+    });
+
+    const voiceResponse = language === 'es' 
+      ? `Ofrecemos ${data.services.length} categorías de servicios: ${serviceSummaries.map(s => s.summary).join(', ')}. ¿Qué servicio te interesa más?`
+      : `We offer ${data.services.length} service categories: ${serviceSummaries.map(s => s.summary).join(', ')}. What service interests you most?`;
 
     res.json({
       success: true,
-      data: services,
-      total: services.length
+      voice_response: voiceResponse,
+      data: serviceSummaries,
+      total: data.services.length
     });
   } catch (error) {
     console.error('Error fetching services:', error);
@@ -101,22 +119,59 @@ router.get('/search', async (req, res) => {
       return categoryMatch || variantMatch;
     });
 
-    // Translate categories for response if needed
-    const translatedResults = results.map(service => ({
-      ...service,
-      category: translateServiceCategory(service.category, language)
-    }));
+    // Create voice-friendly search results
+    const voiceFriendlyResults = results.map(service => {
+      const category = translateServiceCategory(service.category, language);
+      const variants = service.variants || [];
+      
+      if (language === 'es') {
+        return {
+          category: category,
+          summary: `${category}: ${variants.length} opciones disponibles`,
+          options: variants.map(variant => ({
+            name: variant.name,
+            price: `${variant.price_discounted_eur || variant.price_original_eur}€`,
+            description: variant.description
+          })),
+          price_range: getPriceRangeText(service, 'es')
+        };
+      } else {
+        return {
+          category: category,
+          summary: `${category}: ${variants.length} options available`,
+          options: variants.map(variant => ({
+            name: variant.name,
+            price: `${variant.price_discounted_eur || variant.price_original_eur}€`,
+            description: variant.description
+          })),
+          price_range: getPriceRangeText(service, 'en')
+        };
+      }
+    });
+
+    // Create voice response
+    let voiceResponse;
+    if (results.length === 0) {
+      voiceResponse = language === 'es' 
+        ? `Lo siento, no encontramos servicios específicos para "${query}". ¿Te gustaría ver todos nuestros servicios disponibles?`
+        : `Sorry, we couldn't find specific services for "${query}". Would you like to see all our available services?`;
+    } else if (results.length === 1) {
+      const service = voiceFriendlyResults[0];
+      voiceResponse = language === 'es'
+        ? `Para ${service.category}, tenemos ${service.options.length} opciones. ${service.options.map(opt => `${opt.name} por ${opt.price}`).join(', ')}. ¿Te gustaría más detalles sobre alguna opción?`
+        : `For ${service.category}, we have ${service.options.length} options. ${service.options.map(opt => `${opt.name} for ${opt.price}`).join(', ')}. Would you like more details about any option?`;
+    } else {
+      voiceResponse = language === 'es'
+        ? `Encontramos ${results.length} categorías relacionadas con "${query}": ${voiceFriendlyResults.map(s => s.summary).join(', ')}. ¿Qué te interesa más?`
+        : `We found ${results.length} categories related to "${query}": ${voiceFriendlyResults.map(s => s.summary).join(', ')}. What interests you most?`;
+    }
 
     res.json({
       success: true,
       query: searchTerm,
-      search_terms_used: searchTerms,
-      data: translatedResults,
-      total: translatedResults.length,
-      debug: {
-        original_search: query,
-        available_categories: data.services.map(s => s.category)
-      }
+      voice_response: voiceResponse,
+      data: voiceFriendlyResults,
+      total: voiceFriendlyResults.length
     });
   } catch (error) {
     console.error('Error searching services:', error);
