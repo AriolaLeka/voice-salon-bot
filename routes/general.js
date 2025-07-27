@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
+const { detectLanguage, getTimeBasedGreeting, getWelcomeMessage } = require('../utils/languageUtils');
 
 // Load data
 let salonData = null;
@@ -36,23 +37,12 @@ async function loadData() {
 // GET /api/general/welcome - Get welcome message
 router.get('/welcome', async (req, res) => {
   try {
-    const greeting = getTimeBasedGreeting();
+    const language = detectLanguage(req);
+    const welcomeData = getWelcomeMessage(language);
     
     res.json({
       success: true,
-      data: {
-        greeting: greeting,
-        message: "Te ayudo con información sobre nuestros servicios:",
-        services: [
-          "👁️ Extensiones de pestañas (Pelo a pelo, Volumen ruso)",
-          "💅 Manicura y pedicura profesional", 
-          "✂️ Cejas (tinte, depilación, laminado)",
-          "💎 Packs especiales desde 49€"
-        ],
-        hours: "Horario: Lunes a Viernes 10:00-18:00",
-        location: "Ubicación: Campanar, Valencia",
-        question: "¿Qué servicio te interesa?"
-      }
+      data: welcomeData
     });
   } catch (error) {
     console.error('Error generating welcome message:', error);
@@ -67,22 +57,39 @@ router.get('/welcome', async (req, res) => {
 router.get('/about', async (req, res) => {
   try {
     const { scheduleData } = await loadData();
+    const language = detectLanguage(req);
+    
+    const businessInfo = {
+      business_name: "Hera's Nails & Lashes",
+      location: scheduleData.location.address,
+      hours_summary: language === 'es' 
+        ? "Lunes a Viernes 09:30-20:30, Sábado 09:30-14:30, Cerrado domingos"
+        : "Monday to Friday 09:30-20:30, Saturday 09:30-14:30, Closed Sundays"
+    };
+    
+    if (language === 'es') {
+      businessInfo.description = "Centro de belleza especializado en manicuras, pedicuras, cejas, pestañas y tratamientos faciales en Valencia. Ubicados en Calle Santos Justo y Pastor, cerca de La Salud.";
+      businessInfo.services_summary = [
+        "Manicuras",
+        "Pedicuras", 
+        "Cejas y Depilación",
+        "Pestañas",
+        "Faciales"
+      ];
+    } else {
+      businessInfo.description = "Beauty center specialized in manicures, pedicures, eyebrows, eyelashes and facial treatments in Valencia. Located on Calle Santos Justo y Pastor, near La Salud.";
+      businessInfo.services_summary = [
+        "Manicures",
+        "Pedicures",
+        "Eyebrows and Waxing", 
+        "Eyelashes",
+        "Facial treatments"
+      ];
+    }
     
     res.json({
       success: true,
-      data: {
-        business_name: "Hera's Nails & Lashes",
-        description: "Centro de belleza especializado en manicuras, pedicuras, cejas, pestañas y tratamientos faciales en Valencia. Ubicados en Calle Santos Justo y Pastor, cerca de La Salud.",
-        services_summary: [
-          "Manicuras",
-          "Pedicuras",
-          "Cejas y Depilación",
-          "Pestañas",
-          "Faciales"
-        ],
-        location: scheduleData.location.address,
-        hours_summary: "Lunes a Viernes 09:30-20:30, Sábado 09:30-14:30, Cerrado domingos"
-      }
+      data: businessInfo
     });
   } catch (error) {
     console.error('Error fetching business information:', error);

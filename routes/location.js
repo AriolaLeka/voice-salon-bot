@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
+const { detectLanguage } = require('../utils/languageUtils');
 
 // Load schedule data (contains location info)
 let scheduleData = null;
@@ -132,13 +133,14 @@ router.get('/parking', async (req, res) => {
 router.get('/summary', async (req, res) => {
   try {
     const data = await loadScheduleData();
+    const language = detectLanguage(req);
     
     const summary = {
       address: data.location.address,
       city: data.location.city,
       directions: data.location.directions,
-      transport_summary: getTransportSummary(data.location.public_transport),
-      parking_summary: getParkingSummary(data.parking),
+      transport_summary: getTransportSummary(data.location.public_transport, language),
+      parking_summary: getParkingSummary(data.parking, language),
       google_maps: data.location.google_maps_url
     };
 
@@ -156,43 +158,63 @@ router.get('/summary', async (req, res) => {
 });
 
 // Helper function to get transport summary
-function getTransportSummary(publicTransport) {
-  if (!publicTransport) return 'Información de transporte no disponible';
+function getTransportSummary(publicTransport, language = 'en') {
+  if (!publicTransport) {
+    return language === 'es' ? 'Información de transporte no disponible' : 'Transport information not available';
+  }
   
   const busLines = publicTransport.bus?.map(bus => bus.line).join(', ') || '';
   const metroLines = publicTransport.metro?.map(metro => metro.line).join(', ') || '';
   
-  let summary = 'Estamos en Campanar, Valencia. ';
-  
-  if (busLines) {
-    summary += `Autobuses: ${busLines}. `;
+  if (language === 'es') {
+    let summary = 'Estamos en Campanar, Valencia. ';
+    
+    if (busLines) {
+      summary += `Autobuses: ${busLines}. `;
+    }
+    
+    if (metroLines) {
+      summary += `Metro: ${metroLines}. `;
+    }
+    
+    summary += 'Fácil acceso en transporte público.';
+    return summary;
+  } else {
+    let summary = 'We are in Campanar, Valencia. ';
+    
+    if (busLines) {
+      summary += `Buses: ${busLines}. `;
+    }
+    
+    if (metroLines) {
+      summary += `Metro: ${metroLines}. `;
+    }
+    
+    summary += 'Easy access by public transport.';
+    return summary;
   }
-  
-  if (metroLines) {
-    summary += `Metro: ${metroLines}. `;
-  }
-  
-  summary += 'Fácil acceso en transporte público.';
-  
-  return summary;
 }
 
 // Helper function to get parking summary
-function getParkingSummary(parking) {
+function getParkingSummary(parking, language = 'en') {
   if (!parking || !parking.available) {
-    return 'No hay parking disponible en el local.';
+    return language === 'es' ? 'No hay parking disponible en el local.' : 'No parking available at the premises.';
   }
   
   const options = parking.options || [];
   if (options.length === 0) {
-    return 'Parking disponible pero sin información específica.';
+    return language === 'es' ? 'Parking disponible pero sin información específica.' : 'Parking available but no specific information.';
   }
   
   const parkingOptions = options.map(option => 
     `${option.type}: ${option.cost} (${option.distance})`
   ).join('. ');
   
-  return `Parking disponible: ${parkingOptions}. ${parking.notes || ''}`;
+  if (language === 'es') {
+    return `Parking disponible: ${parkingOptions}. ${parking.notes || ''}`;
+  } else {
+    return `Parking available: ${parkingOptions}. ${parking.notes || ''}`;
+  }
 }
 
 module.exports = router; 

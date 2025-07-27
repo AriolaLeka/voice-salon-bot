@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
+const { detectLanguage, getBusinessStatusMessage, getHoursSummary } = require('../utils/languageUtils');
 
 // Load schedule data
 let scheduleData = null;
@@ -24,12 +25,13 @@ async function loadScheduleData() {
 router.get('/', async (req, res) => {
   try {
     const data = await loadScheduleData();
+    const language = detectLanguage(req);
     
     res.json({
       success: true,
       data: {
         business_hours: data.business_hours,
-        summary: getHoursSummary(data.business_hours)
+        summary: getHoursSummary(data.business_hours, language)
       }
     });
   } catch (error) {
@@ -93,6 +95,7 @@ router.get('/today', async (req, res) => {
 router.get('/status', async (req, res) => {
   try {
     const data = await loadScheduleData();
+    const language = detectLanguage(req);
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
     const todayHours = data.business_hours[today];
     
@@ -101,7 +104,7 @@ router.get('/status', async (req, res) => {
         success: true,
         data: {
           is_open: false,
-          message: 'Cerrado hoy',
+          message: language === 'es' ? 'Cerrado hoy' : 'Closed today',
           next_open: getNextOpenDay(data.business_hours, today)
         }
       });
@@ -120,11 +123,11 @@ router.get('/status', async (req, res) => {
       data: {
         is_open: isOpen,
         today_hours: todayHours,
-        current_time: currentTime.toLocaleTimeString('es-ES', { 
+        current_time: currentTime.toLocaleTimeString(language === 'es' ? 'es-ES' : 'en-US', { 
           hour: '2-digit', 
           minute: '2-digit' 
         }),
-        message: isOpen ? 'Abierto ahora' : 'Cerrado ahora',
+        message: getBusinessStatusMessage(isOpen, language),
         next_open: isOpen ? null : getNextOpenDay(data.business_hours, today)
       }
     });
@@ -141,6 +144,7 @@ router.get('/status', async (req, res) => {
 router.get('/week', async (req, res) => {
   try {
     const data = await loadScheduleData();
+    const language = detectLanguage(req);
     const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
     const weeklySchedule = weekDays.map(day => ({
@@ -153,7 +157,7 @@ router.get('/week', async (req, res) => {
       success: true,
       data: {
         weekly_schedule: weeklySchedule,
-        summary: getHoursSummary(data.business_hours)
+        summary: getHoursSummary(data.business_hours, language)
       }
     });
   } catch (error) {
@@ -165,7 +169,7 @@ router.get('/week', async (req, res) => {
   }
 });
 
-// Helper function to get hours summary
+// Helper function to get hours summary (legacy - now using utils)
 function getHoursSummary(businessHours) {
   const openDays = Object.entries(businessHours)
     .filter(([day, hours]) => hours !== 'Closed')

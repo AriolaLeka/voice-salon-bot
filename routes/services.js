@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
+const { detectLanguage, translateServiceCategory } = require('../utils/languageUtils');
 
 // Load salon data
 let salonData = null;
@@ -24,8 +25,10 @@ async function loadSalonData() {
 router.get('/', async (req, res) => {
   try {
     const data = await loadSalonData();
+    const language = detectLanguage(req);
+    
     const services = data.services.map(service => ({
-      category: service.category,
+      category: translateServiceCategory(service.category, language),
       price_original_eur: service.price_original_eur,
       price_discounted_eur: service.price_discounted_eur,
       duration: service.duration,
