@@ -10,6 +10,83 @@ const auth = new google.auth.GoogleAuth({
   scopes: ['https://www.googleapis.com/auth/calendar']
 });
 
+// Language utility functions for multilingual support
+
+// Detect language from request headers or query parameters
+function detectLanguage(req) {
+  // Check for explicit language parameter
+  if (req.query.lang) {
+    return req.query.lang.toLowerCase();
+  }
+  
+  // Check Accept-Language header
+  const acceptLanguage = req.headers['accept-language'];
+  if (acceptLanguage) {
+    if (acceptLanguage.includes('en')) {
+      return 'en';
+    } else if (acceptLanguage.includes('es')) {
+      return 'es';
+    }
+  }
+  
+  // Default to English for Vapi.ai calls
+  return 'en';
+}
+
+// Parse email from voice input
+function parseEmailFromVoice(text) {
+  const lowerText = text.toLowerCase();
+  
+  // Common email patterns in voice
+  const emailPatterns = [
+    // "at" and "dot" patterns
+    /([a-z0-9._%+-]+)\s+at\s+([a-z0-9.-]+)\s+dot\s+([a-z]{2,})/,
+    /([a-z0-9._%+-]+)\s+at\s+([a-z0-9.-]+)\s+dot\s+([a-z]{2,})/,
+    // "at" and "dot com" patterns
+    /([a-z0-9._%+-]+)\s+at\s+([a-z0-9.-]+)\s+dot\s+com/,
+    // Simple "at" patterns
+    /([a-z0-9._%+-]+)\s+at\s+([a-z0-9.-]+)/,
+    // Direct email patterns
+    /([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})/
+  ];
+  
+  for (const pattern of emailPatterns) {
+    const match = lowerText.match(pattern);
+    if (match) {
+      if (match[1] && match[2] && match[3]) {
+        // Pattern: name at domain dot com
+        return `${match[1]}@${match[2]}.${match[3]}`;
+      } else if (match[1] && match[2]) {
+        // Pattern: name at domain
+        return `${match[1]}@${match[2]}`;
+      } else if (match[1]) {
+        // Direct email
+        return match[1];
+      }
+    }
+  }
+  
+  // Handle common voice email patterns
+  const voicePatterns = {
+    'gmail': 'gmail.com',
+    'yahoo': 'yahoo.com',
+    'hotmail': 'hotmail.com',
+    'outlook': 'outlook.com'
+  };
+  
+  for (const [provider, domain] of Object.entries(voicePatterns)) {
+    if (lowerText.includes(provider)) {
+      // Extract username before "at"
+      const usernameMatch = lowerText.match(/([a-z0-9._%+-]+)\s+at\s+/);
+      if (usernameMatch) {
+        return `${usernameMatch[1]}@${domain}`;
+      }
+    }
+  }
+  
+  return null;
+}
+
 // Parse date and time from natural language
 function parseAppointmentDateTime(text, language = 'en') {
   const lowerText = text.toLowerCase();
@@ -141,23 +218,38 @@ function validateAppointmentTime(date, time, businessHours) {
 // Create Google Calendar event
 async function createCalendarEvent(appointmentData) {
   try {
+    // Check if Google Calendar is properly configured
+    if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+      console.log('Google Calendar not configured - skipping calendar event creation');
+      return {
+        success: true,
+        eventId: 'local-' + Date.now(),
+        eventUrl: null,
+        note: 'Calendar integration not configured'
+      };
+    }
+    
     const authClient = await auth.getClient();
     
     const event = {
       summary: `Appointment - ${appointmentData.service}`,
-      description: `Client: ${appointmentData.clientName}\nService: ${appointmentData.service}\nPhone: ${appointmentData.phone}`,
+      description: `Client: ${appointmentData.clientName}\nService: ${appointmentData.service}\nPhone: ${appointmentData.phone || 'Not provided'}\nEmail: ${appointmentData.email || 'Not provided'}`,
       start: {
         dateTime: `${appointmentData.date}T${appointmentData.time}:00`,
         timeZone: 'Europe/Madrid',
       },
       end: {
-        dateTime: `${appointmentData.date}T${appointmentData.time}:00`,
+        dateTime: `${appointmentData.date}T${moment(appointmentData.time, 'HH:mm').add(1, 'hour').format('HH:mm')}:00`,
         timeZone: 'Europe/Madrid',
       },
-      attendees: [
-        { email: process.env.SALON_EMAIL },
-        { email: appointmentData.email || 'client@example.com' }
-      ],
+      attendees: appointmentData.email && appointmentData.email !== 'Not provided' 
+        ? [
+            { email: process.env.SALON_EMAIL || 'salon@example.com' },
+            { email: appointmentData.email }
+          ]
+        : [
+            { email: process.env.SALON_EMAIL || 'salon@example.com' }
+          ],
       reminders: {
         useDefault: false,
         overrides: [
@@ -222,5 +314,6 @@ module.exports = {
   parseAppointmentDateTime,
   validateAppointmentTime,
   createCalendarEvent,
-  generateAppointmentResponse
+  generateAppointmentResponse,
+  parseEmailFromVoice
 }; 

@@ -163,6 +163,10 @@
         "email": {
           "type": "string",
           "description": "Client's email address (optional)"
+        },
+        "voiceEmail": {
+          "type": "string",
+          "description": "Raw voice input for email (e.g., 'isabella at gmail dot com')"
         }
       }
     },

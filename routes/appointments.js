@@ -7,7 +7,8 @@ const {
   parseAppointmentDateTime, 
   validateAppointmentTime, 
   createCalendarEvent, 
-  generateAppointmentResponse 
+  generateAppointmentResponse,
+  parseEmailFromVoice
 } = require('../utils/appointmentUtils');
 
 // Load schedule data for validation
@@ -30,7 +31,7 @@ async function loadScheduleData() {
 // POST /api/appointments/book - Book an appointment
 router.post('/book', async (req, res) => {
   try {
-    const { clientName, service, dateTimeText, phone, email } = req.body;
+    const { clientName, service, dateTimeText, phone, email, voiceEmail } = req.body;
     const language = detectLanguage(req);
     
     if (!clientName || !service || !dateTimeText) {
@@ -39,6 +40,12 @@ router.post('/book', async (req, res) => {
         error: language === 'es' ? 'Faltan datos requeridos' : 'Missing required data',
         required: ['clientName', 'service', 'dateTimeText']
       });
+    }
+
+    // Parse email from voice input if provided
+    let parsedEmail = email;
+    if (voiceEmail && !email) {
+      parsedEmail = parseEmailFromVoice(voiceEmail);
     }
 
     // Parse date and time from natural language
@@ -84,7 +91,7 @@ router.post('/book', async (req, res) => {
       date: parsedDateTime.date,
       time: parsedDateTime.time,
       phone: phone || 'Not provided',
-      email: email || 'Not provided'
+      email: parsedEmail || 'Not provided'
     };
 
     // Create Google Calendar event
@@ -108,7 +115,8 @@ router.post('/book', async (req, res) => {
       appointment: {
         ...appointmentData,
         calendar_event_id: calendarResult.eventId,
-        calendar_url: calendarResult.eventUrl
+        calendar_url: calendarResult.eventUrl,
+        calendar_note: calendarResult.note
       }
     });
 
