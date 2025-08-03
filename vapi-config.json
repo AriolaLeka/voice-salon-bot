@@ -14,21 +14,21 @@
     {
       "name": "getWelcomeMessage",
       "description": "Get welcome message for new callers",
-      "url": "https://your-domain.com/api/general/welcome",
+      "url": "https://voice-salon-bot.onrender.com/api/general/welcome",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getServices",
       "description": "Get general overview of all service categories. Use this when customers ask for a general overview of what services you offer.",
-      "url": "https://your-domain.com/api/services",
+      "url": "https://voice-salon-bot.onrender.com/api/services",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "searchServices",
       "description": "Search for specific services by name or category. Use this when customers ask about specific services like manicures, pedicures, eyelashes, eyebrows, etc.",
-      "url": "https://your-domain.com/api/services/search",
+      "url": "https://voice-salon-bot.onrender.com/api/services/search",
       "method": "GET",
       "parameters": {
         "query": {
@@ -40,7 +40,7 @@
     {
       "name": "getServiceCategory",
       "description": "Get services by category",
-      "url": "https://your-domain.com/api/services/{category}",
+      "url": "https://voice-salon-bot.onrender.com/api/services/{category}",
       "method": "GET",
       "parameters": {
         "category": {
@@ -52,79 +52,131 @@
     {
       "name": "getPopularServices",
       "description": "Get popular services",
-      "url": "https://your-domain.com/api/services/popular",
+      "url": "https://voice-salon-bot.onrender.com/api/services/popular",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getBusinessHours",
       "description": "Get business hours and status",
-      "url": "https://your-domain.com/api/hours/status",
+      "url": "https://voice-salon-bot.onrender.com/api/hours/status",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getTodayHours",
       "description": "Get today's business hours",
-      "url": "https://your-domain.com/api/hours/today",
+      "url": "https://voice-salon-bot.onrender.com/api/hours/today",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getWeeklySchedule",
       "description": "Get weekly business schedule",
-      "url": "https://your-domain.com/api/hours/week",
+      "url": "https://voice-salon-bot.onrender.com/api/hours/week",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getLocationInfo",
       "description": "Get location and parking information",
-      "url": "https://your-domain.com/api/location/summary",
+      "url": "https://voice-salon-bot.onrender.com/api/location/summary",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getAddress",
       "description": "Get business address",
-      "url": "https://your-domain.com/api/location/address",
+      "url": "https://voice-salon-bot.onrender.com/api/location/address",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getTransportInfo",
       "description": "Get public transport information",
-      "url": "https://your-domain.com/api/location/transport",
+      "url": "https://voice-salon-bot.onrender.com/api/location/transport",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getParkingInfo",
       "description": "Get parking information",
-      "url": "https://your-domain.com/api/location/parking",
+      "url": "https://voice-salon-bot.onrender.com/api/location/parking",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getAboutInfo",
       "description": "Get business information",
-      "url": "https://your-domain.com/api/general/about",
+      "url": "https://voice-salon-bot.onrender.com/api/general/about",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getServicesOverview",
       "description": "Get services overview",
-      "url": "https://your-domain.com/api/general/services-overview",
+      "url": "https://voice-salon-bot.onrender.com/api/general/services-overview",
       "method": "GET",
       "parameters": {}
     },
     {
       "name": "getContactInfo",
       "description": "Get contact information",
-      "url": "https://your-domain.com/api/general/contact",
+      "url": "https://voice-salon-bot.onrender.com/api/general/contact",
       "method": "GET",
       "parameters": {}
+    },
+    {
+      "name": "parseAppointmentDateTime",
+      "description": "Parse date and time from natural language for appointment booking",
+      "url": "https://voice-salon-bot.onrender.com/api/appointments/parse-datetime",
+      "method": "POST",
+      "parameters": {
+        "text": {
+          "type": "string",
+          "description": "Natural language text containing date and time (e.g., 'tomorrow at 2 PM', 'Friday at 10 AM')"
+        }
+      }
+    },
+    {
+      "name": "bookAppointment",
+      "description": "Book an appointment with client details and parsed date/time",
+      "url": "https://voice-salon-bot.onrender.com/api/appointments/book",
+      "method": "POST",
+      "parameters": {
+        "clientName": {
+          "type": "string",
+          "description": "Client's full name"
+        },
+        "service": {
+          "type": "string",
+          "description": "Service requested (e.g., 'manicure', 'pedicure', 'eyelash extensions')"
+        },
+        "dateTimeText": {
+          "type": "string",
+          "description": "Natural language date and time (e.g., 'tomorrow at 2 PM', 'Friday at 10 AM')"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Client's phone number (optional)"
+        },
+        "email": {
+          "type": "string",
+          "description": "Client's email address (optional)"
+        }
+      }
+    },
+    {
+      "name": "getAvailableTimes",
+      "description": "Get available appointment times for a specific date",
+      "url": "https://voice-salon-bot.onrender.com/api/appointments/available-times/{date}",
+      "method": "GET",
+      "parameters": {
+        "date": {
+          "type": "string",
+          "description": "Date in YYYY-MM-DD format"
+        }
+      }
     }
   ],
   "system_prompt": "You are the virtual assistant for Hera's Nails & Lashes, specialized in beauty services. Your function is to provide information about our services.\n\nCONVERSATION STYLE:\n• Use short and direct phrases\n• Maximum 2-3 sentences per response\n• Be natural and conversational\n• Avoid long and formal texts\n• Respond like an expert friend\n\nBUSINESS HOURS:\nMonday to Friday: 10:00-18:00\nSaturday and Sunday: Closed\n\nABOUT US:\n• We are Hera's Nails & Lashes, we have the best professionals\n• Specialists in nails, eyelashes, pedicures and tints\n• Located in Campanar, Valencia\n\nYOUR FUNCTION:\n1. Provide information about services\n2. Help find suitable services\n3. Explain features and prices\n4. Inform about hours and location\n5. We do NOT make direct sales\n\nINSTRUCTIONS:\n1. For first time, use getWelcomeMessage\n2. For specific services (manicure, pedicure, eyelashes, eyebrows, nails, etc.), use ONLY searchServices with the exact service name\n3. For general service overview, use getServices\n4. For hours, use getBusinessHours\n5. For location, use getLocationInfo\n6. NEVER call multiple functions for the same request\n7. Use the voice_response field from API responses\n8. Respond in English\n9. Be friendly and professional",

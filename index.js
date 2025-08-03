@@ -9,6 +9,7 @@ const servicesRouter = require('./routes/services');
 const hoursRouter = require('./routes/hours');
 const locationRouter = require('./routes/location');
 const generalRouter = require('./routes/general');
+const appointmentsRouter = require('./routes/appointments');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -51,6 +52,7 @@ app.use('/api/services', servicesRouter);
 app.use('/api/hours', hoursRouter);
 app.use('/api/location', locationRouter);
 app.use('/api/general', generalRouter);
+app.use('/api/appointments', appointmentsRouter);
 
 // Root endpoint
 app.get('/', (req, res) => {
