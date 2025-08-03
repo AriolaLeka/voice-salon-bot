@@ -189,18 +189,32 @@ async function createCalendarEvent(appointmentData) {
 
 // Generate voice response for appointment booking
 function generateAppointmentResponse(appointmentData, language = 'en') {
-  const { clientName, service, date, time } = appointmentData;
+  const { clientName, service, date, time, email } = appointmentData;
   
   if (language === 'es') {
-    return {
-      confirmation: `Perfecto, ${clientName}. Tu cita para ${service} está confirmada para el ${moment(date).format('DD/MM/YYYY')} a las ${time}. Te enviaremos un recordatorio por email. ¿Hay algo más en lo que pueda ayudarte?`,
-      summary: `Cita confirmada: ${service} - ${moment(date).format('DD/MM/YYYY')} ${time}`
-    };
+    if (email && email !== 'Not provided') {
+      return {
+        confirmation: `Perfecto, ${clientName}. Tu cita para ${service} está confirmada para el ${moment(date).format('DD/MM/YYYY')} a las ${time}. Te enviaremos un recordatorio por email a ${email}. ¿Hay algo más en lo que pueda ayudarte?`,
+        summary: `Cita confirmada: ${service} - ${moment(date).format('DD/MM/YYYY')} ${time}`
+      };
+    } else {
+      return {
+        confirmation: `Perfecto, ${clientName}. Tu cita para ${service} está confirmada para el ${moment(date).format('DD/MM/YYYY')} a las ${time}. Te enviaremos un recordatorio por SMS. ¿Hay algo más en lo que pueda ayudarte?`,
+        summary: `Cita confirmada: ${service} - ${moment(date).format('DD/MM/YYYY')} ${time}`
+      };
+    }
   } else {
-    return {
-      confirmation: `Perfect, ${clientName}. Your appointment for ${service} is confirmed for ${moment(date).format('MM/DD/YYYY')} at ${time}. We'll send you an email reminder. Is there anything else I can help you with?`,
-      summary: `Appointment confirmed: ${service} - ${moment(date).format('MM/DD/YYYY')} ${time}`
-    };
+    if (email && email !== 'Not provided') {
+      return {
+        confirmation: `Perfect, ${clientName}. Your appointment for ${service} is confirmed for ${moment(date).format('MM/DD/YYYY')} at ${time}. We'll send you an email reminder to ${email}. Is there anything else I can help you with?`,
+        summary: `Appointment confirmed: ${service} - ${moment(date).format('MM/DD/YYYY')} ${time}`
+      };
+    } else {
+      return {
+        confirmation: `Perfect, ${clientName}. Your appointment for ${service} is confirmed for ${moment(date).format('MM/DD/YYYY')} at ${time}. We'll send you an SMS reminder. Is there anything else I can help you with?`,
+        summary: `Appointment confirmed: ${service} - ${moment(date).format('MM/DD/YYYY')} ${time}`
+      };
+    }
   }
 }
 

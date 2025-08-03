@@ -189,7 +189,7 @@ router.post('/parse-datetime', async (req, res) => {
     if (!parsedDateTime.isValid) {
       return res.json({
         success: false,
-        voice_response: language === 'es'
+        voice_response: language === 'es' 
           ? `No pude entender la fecha y hora. Por favor, dime algo como "mañana a las 2 de la tarde" o "el viernes a las 10 de la mañana".`
           : `I couldn't understand the date and time. Please tell me something like "tomorrow at 2 PM" or "Friday at 10 AM".`,
         needs_clarification: true
@@ -203,7 +203,7 @@ router.post('/parse-datetime', async (req, res) => {
     if (!validation.valid) {
       let errorMessage;
       if (validation.reason === 'closed_on_day') {
-        errorMessage = language === 'es'
+        errorMessage = language === 'es' 
           ? `Lo siento, estamos cerrados ese día. Nuestros horarios son de lunes a viernes de 10:00 a 18:00.`
           : `Sorry, we're closed on that day. Our hours are Monday to Friday from 10:00 to 18:00.`;
       } else if (validation.reason === 'outside_hours') {
@@ -220,8 +220,8 @@ router.post('/parse-datetime', async (req, res) => {
     }
 
     const voiceResponse = language === 'es'
-      ? `Perfecto, entiendo que quieres una cita para el ${new Date(parsedDateTime.date).toLocaleDateString('es-ES')} a las ${parsedDateTime.time}. ¿Cuál es tu nombre y qué servicio te gustaría?`
-      : `Perfect, I understand you want an appointment for ${new Date(parsedDateTime.date).toLocaleDateString('en-US')} at ${parsedDateTime.time}. What's your name and what service would you like?`;
+      ? `Perfecto, entiendo que quieres una cita para el ${new Date(parsedDateTime.date).toLocaleDateString('es-ES')} a las ${parsedDateTime.time}. ¿Cuál es tu nombre y qué servicio te gustaría? También necesito tu email para enviarte un recordatorio.`
+      : `Perfect, I understand you want an appointment for ${new Date(parsedDateTime.date).toLocaleDateString('en-US')} at ${parsedDateTime.time}. What's your name, what service would you like, and what's your email address for reminders?`;
 
     res.json({
       success: true,
