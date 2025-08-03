@@ -96,7 +96,7 @@ function parseAppointmentDateTime(text, language = 'en') {
     en: {
       today: /today|tonight/,
       tomorrow: /tomorrow/,
-      thisWeek: /this week|this (monday|tuesday|wednesday|thursday|friday|saturday|sunday)/,
+      thisWeek: /this week|this (monday|tuesday|wednesday|thursday|friday|saturday|sunday)|(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/,
       nextWeek: /next week|next (monday|tuesday|wednesday|thursday|friday|saturday|sunday)/,
       specificDate: /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}/,
       dateWithYear: /\d{1,2}\/\d{1,2}\/\d{4}/,
@@ -182,6 +182,17 @@ function parseAppointmentDateTime(text, language = 'en') {
       
       time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
     }
+  } else if (timePatternsLang.hourOnly.test(lowerText)) {
+    const timeMatch = lowerText.match(timePatternsLang.hourOnly);
+    if (timeMatch) {
+      let hour = parseInt(timeMatch[1]);
+      const period = timeMatch[2] || '';
+      
+      if (period === 'pm' && hour !== 12) hour += 12;
+      if (period === 'am' && hour === 12) hour = 0;
+      
+      time = `${hour.toString().padStart(2, '0')}:00`;
+    }
   } else if (timePatternsLang.morning.test(lowerText)) {
     time = '10:00'; // Default morning time
   } else if (timePatternsLang.afternoon.test(lowerText)) {
@@ -190,6 +201,7 @@ function parseAppointmentDateTime(text, language = 'en') {
     time = '18:00'; // Default evening time
   }
 
+  console.log('Date parsing debug:', { input: text, date, time, isValid: !!(date && time) });
   return { date, time, isValid: !!(date && time) };
 }
 
@@ -199,6 +211,8 @@ function validateAppointmentTime(date, time, businessHours) {
   const dayOfWeek = appointmentDate.format('dddd');
   const dayHours = businessHours[dayOfWeek];
   
+  console.log('Validation debug:', { date, time, dayOfWeek, dayHours, businessHours });
+  
   if (!dayHours || dayHours === 'Closed') {
     return { valid: false, reason: 'closed_on_day' };
   }
@@ -207,6 +221,8 @@ function validateAppointmentTime(date, time, businessHours) {
   const appointmentTime = moment(`${date} ${time}`, 'YYYY-MM-DD HH:mm');
   const startDateTime = moment(`${date} ${startTime}`, 'YYYY-MM-DD HH:mm');
   const endDateTime = moment(`${date} ${endTime}`, 'YYYY-MM-DD HH:mm');
+
+  console.log('Time validation:', { appointmentTime: appointmentTime.format(), startDateTime: startDateTime.format(), endDateTime: endDateTime.format() });
 
   if (appointmentTime.isBefore(startDateTime) || appointmentTime.isAfter(endDateTime)) {
     return { valid: false, reason: 'outside_hours' };
@@ -218,6 +234,8 @@ function validateAppointmentTime(date, time, businessHours) {
 // Create Google Calendar event
 async function createCalendarEvent(appointmentData) {
   try {
+    console.log('Creating calendar event for:', appointmentData);
+    
     // Check if Google Calendar is properly configured
     if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       console.log('Google Calendar not configured - skipping calendar event creation');
@@ -230,6 +248,7 @@ async function createCalendarEvent(appointmentData) {
     }
     
     const authClient = await auth.getClient();
+    console.log('✅ Authentication successful');
     
     const event = {
       summary: `Appointment - ${appointmentData.service}`,
@@ -242,14 +261,8 @@ async function createCalendarEvent(appointmentData) {
         dateTime: `${appointmentData.date}T${moment(appointmentData.time, 'HH:mm').add(1, 'hour').format('HH:mm')}:00`,
         timeZone: 'Europe/Madrid',
       },
-      attendees: appointmentData.email && appointmentData.email !== 'Not provided' 
-        ? [
-            { email: process.env.SALON_EMAIL || 'salon@example.com' },
-            { email: appointmentData.email }
-          ]
-        : [
-            { email: process.env.SALON_EMAIL || 'salon@example.com' }
-          ],
+      // No attendees to avoid service account limitations
+      // attendees: [],
       reminders: {
         useDefault: false,
         overrides: [
@@ -259,11 +272,17 @@ async function createCalendarEvent(appointmentData) {
       },
     };
 
+    console.log('Event data:', JSON.stringify(event, null, 2));
+
     const response = await calendar.events.insert({
       auth: authClient,
       calendarId: 'primary',
       resource: event,
     });
+
+    console.log('✅ Calendar event created successfully');
+    console.log('Event ID:', response.data.id);
+    console.log('Event URL:', response.data.htmlLink);
 
     return {
       success: true,
@@ -271,7 +290,8 @@ async function createCalendarEvent(appointmentData) {
       eventUrl: response.data.htmlLink
     };
   } catch (error) {
-    console.error('Error creating calendar event:', error);
+    console.error('❌ Error creating calendar event:', error);
+    console.error('Error details:', error.message);
     return {
       success: false,
       error: error.message
