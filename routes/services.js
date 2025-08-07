@@ -182,10 +182,19 @@ router.get('/search', async (req, res) => {
   }
 });
 
-// GET /api/services/:category - Get services by category
-router.get('/:category', async (req, res) => {
+// GET /api/services/category - Get services by category (query parameter)
+router.get('/category', async (req, res) => {
   try {
-    const { category } = req.params;
+    const { category } = req.query;
+    const language = detectLanguage(req);
+    
+    if (!category) {
+      return res.status(400).json({
+        success: false,
+        error: 'Category parameter is required'
+      });
+    }
+
     const data = await loadSalonData();
     
     const service = data.services.find(s => 
@@ -201,8 +210,20 @@ router.get('/:category', async (req, res) => {
       });
     }
 
+    // Create voice-friendly response
+    const categoryName = translateServiceCategory(service.category, language);
+    const variants = service.variants || [];
+    
+    let voiceResponse;
+    if (language === 'es') {
+      voiceResponse = `Para ${categoryName}, tenemos ${variants.length} opciones disponibles. ${variants.map(v => `${v.name} por ${v.price_discounted_eur || v.price_original_eur}€`).join(', ')}. ¿Te gustaría más información sobre alguna opción?`;
+    } else {
+      voiceResponse = `For ${categoryName}, we have ${variants.length} options available. ${variants.map(v => `${v.name} for ${v.price_discounted_eur || v.price_original_eur}€`).join(', ')}. Would you like more information about any option?`;
+    }
+
     res.json({
       success: true,
+      voice_response: voiceResponse,
       data: service
     });
   } catch (error) {
@@ -218,6 +239,7 @@ router.get('/:category', async (req, res) => {
 router.get('/popular', async (req, res) => {
   try {
     const data = await loadSalonData();
+    const language = detectLanguage(req);
     
     const popularServices = data.services.filter(service => 
       service.category.toLowerCase().includes('pack') ||
@@ -226,8 +248,21 @@ router.get('/popular', async (req, res) => {
       service.category.toLowerCase().includes('volumen ruso')
     ).slice(0, 6);
 
+    // Create voice-friendly response
+    const popularCategories = popularServices.map(service => 
+      translateServiceCategory(service.category, language)
+    );
+
+    let voiceResponse;
+    if (language === 'es') {
+      voiceResponse = `Nuestros servicios más populares son: ${popularCategories.join(', ')}. ¿Te gustaría más información sobre alguno de estos servicios?`;
+    } else {
+      voiceResponse = `Our most popular services are: ${popularCategories.join(', ')}. Would you like more information about any of these services?`;
+    }
+
     res.json({
       success: true,
+      voice_response: voiceResponse,
       data: popularServices,
       total: popularServices.length
     });
@@ -240,10 +275,19 @@ router.get('/popular', async (req, res) => {
   }
 });
 
-// GET /api/services/price-range - Get services by price range
-router.get('/price-range/:min/:max', async (req, res) => {
+// GET /api/services/price-range - Get services by price range (query parameters)
+router.get('/price-range', async (req, res) => {
   try {
-    const { min, max } = req.params;
+    const { min, max } = req.query;
+    const language = detectLanguage(req);
+    
+    if (!min || !max) {
+      return res.status(400).json({
+        success: false,
+        error: 'Both min and max price parameters are required'
+      });
+    }
+
     const minPrice = parseFloat(min);
     const maxPrice = parseFloat(max);
 
@@ -261,8 +305,21 @@ router.get('/price-range/:min/:max', async (req, res) => {
       return price >= minPrice && price <= maxPrice;
     });
 
+    // Create voice-friendly response
+    const serviceNames = servicesInRange.map(service => 
+      translateServiceCategory(service.category, language)
+    );
+
+    let voiceResponse;
+    if (language === 'es') {
+      voiceResponse = `Encontramos ${servicesInRange.length} servicios entre ${minPrice}€ y ${maxPrice}€: ${serviceNames.join(', ')}. ¿Te gustaría más información sobre alguno de estos servicios?`;
+    } else {
+      voiceResponse = `We found ${servicesInRange.length} services between ${minPrice}€ and ${maxPrice}€: ${serviceNames.join(', ')}. Would you like more information about any of these services?`;
+    }
+
     res.json({
       success: true,
+      voice_response: voiceResponse,
       price_range: { min: minPrice, max: maxPrice },
       data: servicesInRange,
       total: servicesInRange.length
@@ -332,6 +389,74 @@ router.get('/test-search/:term', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Error testing search'
+    });
+  }
+});
+
+// GET /api/services/price-range/:min/:max - Get services by price range (path parameters) - KEEP FOR BACKWARDS COMPATIBILITY
+router.get('/price-range/:min/:max', async (req, res) => {
+  try {
+    const { min, max } = req.params;
+    const minPrice = parseFloat(min);
+    const maxPrice = parseFloat(max);
+
+    if (isNaN(minPrice) || isNaN(maxPrice)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid price range parameters'
+      });
+    }
+
+    const data = await loadSalonData();
+    
+    const servicesInRange = data.services.filter(service => {
+      const price = service.price_discounted_eur || service.price_original_eur;
+      return price >= minPrice && price <= maxPrice;
+    });
+
+    res.json({
+      success: true,
+      price_range: { min: minPrice, max: maxPrice },
+      data: servicesInRange,
+      total: servicesInRange.length
+    });
+  } catch (error) {
+    console.error('Error fetching services by price range:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error fetching services by price range'
+    });
+  }
+});
+
+// GET /api/services/:category - Get services by category (path parameter) - KEEP FOR BACKWARDS COMPATIBILITY
+router.get('/:category', async (req, res) => {
+  try {
+    const { category } = req.params;
+    const data = await loadSalonData();
+    
+    const service = data.services.find(s => 
+      s.category.toLowerCase().replace(/[^a-z0-9]/g, '') === 
+      category.toLowerCase().replace(/[^a-z0-9]/g, '')
+    );
+
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        error: 'Service category not found',
+        available_categories: data.services.map(s => s.category)
+      });
+    }
+
+    res.json({
+      success: true,
+      data: service
+    });
+  } catch (error) {
+    console.error('Error fetching service category:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error fetching service category'
     });
   }
 });

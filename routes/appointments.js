@@ -129,7 +129,65 @@ router.post('/book', async (req, res) => {
   }
 });
 
-// GET /api/appointments/available-times - Get available times for a date
+// GET /api/appointments/available-times - Get available times for a date (query parameter)
+router.get('/available-times', async (req, res) => {
+  try {
+    const { date } = req.query;
+    const language = detectLanguage(req);
+    
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        error: 'Date parameter is required'
+      });
+    }
+    
+    const { business_hours } = await loadScheduleData();
+    
+    const appointmentDate = new Date(date);
+    const dayOfWeek = appointmentDate.toLocaleDateString('en-US', { weekday: 'long' });
+    const dayHours = business_hours[dayOfWeek];
+    
+    if (!dayHours || dayHours === 'Closed') {
+      return res.json({
+        success: false,
+        voice_response: language === 'es'
+          ? `Lo siento, estamos cerrados ese día.`
+          : `Sorry, we're closed on that day.`
+      });
+    }
+
+    const [startTime, endTime] = dayHours.split('-');
+    const startHour = parseInt(startTime.split(':')[0]);
+    const endHour = parseInt(endTime.split(':')[0]);
+    
+    // Generate available time slots (every hour)
+    const availableTimes = [];
+    for (let hour = startHour; hour < endHour; hour++) {
+      availableTimes.push(`${hour.toString().padStart(2, '0')}:00`);
+    }
+
+    const voiceResponse = language === 'es'
+      ? `Para el ${new Date(date).toLocaleDateString('es-ES')}, tenemos horarios disponibles de ${startTime} a ${endTime}. Horarios disponibles: ${availableTimes.join(', ')}.`
+      : `For ${new Date(date).toLocaleDateString('en-US')}, we have available times from ${startTime} to ${endTime}. Available times: ${availableTimes.join(', ')}.`;
+
+    res.json({
+      success: true,
+      voice_response: voiceResponse,
+      available_times: availableTimes,
+      business_hours: dayHours
+    });
+
+  } catch (error) {
+    console.error('Error getting available times:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error getting available times'
+    });
+  }
+});
+
+// GET /api/appointments/available-times/:date - Get available times for a date (path parameter) - KEEP FOR BACKWARDS COMPATIBILITY
 router.get('/available-times/:date', async (req, res) => {
   try {
     const { date } = req.params;
