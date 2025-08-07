@@ -252,7 +252,7 @@ class SmartVapiRegistry {
                     type: 'string',
                     description: 'Natural language date and time (e.g., "tomorrow at 2 PM")'
                 },
-                customerName: {
+                clientName: {
                     type: 'string',
                     description: 'Customer name'
                 },
