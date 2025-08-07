@@ -85,6 +85,17 @@ router.get('/search', async (req, res) => {
     
     // Create search mappings for both languages
     const searchMappings = {
+      // Comprehensive terms that match all services
+      'servicios': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'tratamientos': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'belleza': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'todo': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'services': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'treatments': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'beauty': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'everything': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      
+      // Specific service mappings
       'manicure': ['manicuras', 'manicura'],
       'manicures': ['manicuras', 'manicura'],
       'pedicure': ['pedicuras', 'pedicura'],
@@ -344,6 +355,17 @@ router.get('/test-search/:term', async (req, res) => {
     
     // Create search mappings for both languages
     const searchMappings = {
+      // Comprehensive terms that match all services
+      'servicios': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'tratamientos': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'belleza': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'todo': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'services': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'treatments': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'beauty': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      'everything': ['manicuras', 'pedicuras', 'cejas', 'pestañas', 'faciales', 'micropigmentación', 'eyebrows', 'eyelashes', 'facial', 'manicures', 'pedicures'],
+      
+      // Specific service mappings
       'manicure': ['manicuras', 'manicura'],
       'manicures': ['manicuras', 'manicura'],
       'pedicure': ['pedicuras', 'pedicura'],

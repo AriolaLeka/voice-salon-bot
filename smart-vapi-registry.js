@@ -31,13 +31,13 @@ class SmartVapiRegistry {
         // ===== SERVICES =====
         this.registerFunction(
             'searchServices',
-            'Search for specific services by name or category. Use this when customer asks about a specific service like "manicure", "pedicure", "haircut", "eyebrows", "eyelashes", "facial"',
+            'Search for specific services by name or category. Use this when customer asks about a specific service like "manicure", "pedicure", "eyebrows", "eyelashes", "facial" or general terms like "servicios", "tratamientos", "belleza", "todo" (Spanish) or "services", "treatments", "beauty", "everything" (English)',
             '/api/services/search',
             'GET',
             {
                 query: {
                     type: 'string',
-                    description: 'Search term (e.g., "manicure", "pedicure", "eyebrows", "eyelashes", "facial", "nails")'
+                    description: 'Search term (e.g., "manicure", "pedicure", "eyebrows", "eyelashes", "facial", "nails", "servicios", "tratamientos", "belleza", "todo", "services", "treatments", "beauty", "everything")'
                 },
                 lang: {
                     type: 'string',
@@ -45,7 +45,7 @@ class SmartVapiRegistry {
                     required: false
                 }
             },
-            ['manicure', 'pedicure', 'eyebrows', 'eyelashes', 'facial', 'nails', 'cejas', 'pestañas']
+            ['manicure', 'pedicure', 'eyebrows', 'eyelashes', 'facial', 'nails', 'cejas', 'pestañas', 'servicios', 'tratamientos', 'belleza', 'todo', 'services', 'treatments', 'beauty', 'everything']
         );
 
         this.registerFunction(
