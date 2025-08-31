@@ -1,24 +1,28 @@
 {
   "name": "voice-salon-bot",
-  "version": "1.0.0",
-  "description": "Voice-driven salon bot backend for TopPestanas using Vapi.ai",
+  "version": "2.0.0",
+  "description": "Voice-driven salon bot backend for TopPestanas using ElevenLabs Conversational AI",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test-elevenlabs.js",
+    "test:elevenlabs": "node test-elevenlabs.js",
+    "test:mock": "node test-elevenlabs-mock.js",
+    "migrate": "node migrate-to-elevenlabs.js"
   },
   "keywords": [
     "voice",
     "salon",
     "bot",
-    "vapi",
-    "twilio",
+    "elevenlabs",
+    "conversational-ai",
     "beauty"
   ],
   "author": "TopPestanas",
   "license": "MIT",
   "dependencies": {
+    "axios": "^1.11.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

@@ -1,11 +1,11 @@
-# Hera's Nails & Lashes Voice Bot API
+# Hera's Nails & Lashes Voice Bot API (ElevenLabs)
 
-A Node.js backend API for the Hera's Nails & Lashes voice-driven salon bot, designed to work with Vapi.ai for voice interactions.
+A Node.js backend API for the Hera's Nails & Lashes voice-driven salon bot, designed to work with ElevenLabs Conversational AI for voice interactions.
 
 ## 🏗️ Architecture
 
 ```
-[Caller] → Twilio Number → Vapi.ai (STT/TTS) → Your Backend API → Salon Data
+[Caller] → ElevenLabs Phone Integration → ElevenLabs Conversational AI → Your Backend API → Salon Data
 ```
 
 ## 📁 Project Structure
@@ -47,8 +47,9 @@ Edit `.env` with your actual values:
 ```env
 PORT=3000
 NODE_ENV=development
-VAPI_API_KEY=your_vapi_api_key_here
-VAPI_AGENT_ID=your_vapi_agent_id_here
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+ELEVENLABS_AGENT_ID=your_elevenlabs_agent_id_here
+API_BASE_URL=https://voice-salon-bot.onrender.com
 ```
 
 ### 3. Start the Server
@@ -96,24 +97,36 @@ The server will start on `http://localhost:3000`
 - `GET /api/general/contact` - Get contact information
 - `GET /api/general/status` - Get current business status
 
-## 🤖 Vapi.ai Integration
+### ElevenLabs Integration
+- `POST /api/elevenlabs/webhook` - Webhook for function calls
+- `GET /api/elevenlabs/health` - Health check for ElevenLabs integration
 
-### 1. Create Vapi.ai Agent
+## 🤖 ElevenLabs Integration
 
-1. Go to [Vapi.ai](https://vapi.ai)
-2. Create a new agent
-3. Configure voice settings (Spanish STT/TTS recommended)
+### 1. Create ElevenLabs Agent
 
-### 2. Set Up External Functions
+1. Go to [ElevenLabs](https://elevenlabs.io)
+2. Create a new Conversational AI agent
+3. Configure voice settings (Shimmer voice recommended)
 
-In your Vapi.ai agent, create these external functions:
+### 2. Set Up Functions
+
+In your ElevenLabs agent, configure these functions:
 
 #### Welcome Function
 ```javascript
 {
   "name": "getWelcomeMessage",
-  "url": "https://your-domain.com/api/general/welcome",
-  "method": "GET"
+  "description": "Get welcome message and business overview",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "lang": {
+        "type": "string",
+        "enum": ["en", "es"]
+      }
+    }
+  }
 }
 ```
 
@@ -121,8 +134,16 @@ In your Vapi.ai agent, create these external functions:
 ```javascript
 {
   "name": "getServices",
-  "url": "https://your-domain.com/api/services",
-  "method": "GET"
+  "description": "Get all available services and categories",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "lang": {
+        "type": "string",
+        "enum": ["en", "es"]
+      }
+    }
+  }
 }
 ```
 
@@ -130,10 +151,20 @@ In your Vapi.ai agent, create these external functions:
 ```javascript
 {
   "name": "searchServices",
-  "url": "https://your-domain.com/api/services/search",
-  "method": "GET",
+  "description": "Search for specific services by name or category",
   "parameters": {
-    "query": "string"
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Search term (e.g., manicure, pedicure, eyebrows)"
+      },
+      "lang": {
+        "type": "string",
+        "enum": ["en", "es"]
+      }
+    },
+    "required": ["query"]
   }
 }
 ```
@@ -142,64 +173,94 @@ In your Vapi.ai agent, create these external functions:
 ```javascript
 {
   "name": "getBusinessHours",
-  "url": "https://your-domain.com/api/hours/status",
-  "method": "GET"
+  "description": "Get business hours and current status",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "lang": {
+        "type": "string",
+        "enum": ["en", "es"]
+      }
+    }
+  }
 }
 ```
 
 #### Location Function
 ```javascript
 {
-  "name": "getLocationInfo",
-  "url": "https://your-domain.com/api/location/summary",
-  "method": "GET"
+  "name": "getLocation",
+  "description": "Get business location and address",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "lang": {
+        "type": "string",
+        "enum": ["en", "es"]
+      }
+    }
+  }
 }
 ```
 
-### 3. Vapi.ai System Prompt
+### 3. ElevenLabs System Prompt
 
-Use this system prompt in your Vapi.ai agent:
+Use this system prompt in your ElevenLabs agent:
 
 ```
-Eres el asistente virtual de Hera's Nails & Lashes, especializado en servicios de belleza.
-Tu función es proporcionar información sobre nuestros servicios.
+You are a helpful AI assistant for Hera's Nails & Lashes beauty salon in Valencia, Spain. You help customers with services, hours, location, and appointments. You can call functions to get real-time information about the salon.
 
-ESTILO DE CONVERSACIÓN:
-• Usa frases cortas y directas
-• Máximo 2-3 frases por respuesta
-• Sé natural y conversacional
-• Evita textos largos y formales
-• Responde como un amigo experto
+CRITICAL RULES:
+1. ALWAYS use the voice_response field from API responses when available
+2. NEVER call multiple functions for the same request
+3. For service inquiries:
+   - Use searchServices for specific services (e.g., "manicure", "pedicure", "eyebrows", "eyelashes")
+   - Use getServices for general overview ("what services do you offer")
+   - Use getPopularServices for popular services and packages
+   - Use getServicesByPrice for budget-related questions
+4. For appointment bookings:
+   - First call parseAppointmentDateTime to understand the request
+   - Then call bookAppointment with all required details (name, service, email)
+   - ALWAYS ask for email address to send reminders
+5. For hours/location: Use getBusinessHours, getLocation, or getLocationSummary as appropriate
+6. For general info: Use getWelcomeMessage, getAboutInfo, or getContactInfo
+7. Respond naturally and conversationally
+8. If a function returns an error, apologize and ask the user to try again
+9. Always detect language preference from the conversation and pass it to functions
 
-HORARIOS DE ATENCIÓN:
-Lunes a Viernes: 10:00-18:00
-Sábado y Domingo: Cerrado
+LANGUAGE DETECTION:
+- If customer speaks Spanish, set lang=es
+- If customer speaks English, set lang=en
+- Default to lang=en if unsure
 
-SOBRE NOSOTROS:
-• Somos Hera's Nails & Lashes, centro de belleza especializado en manicuras, pedicuras, cejas, pestañas y tratamientos faciales en Valencia. Ubicados en Calle Santos Justo y Pastor, cerca de La Salud.
-
-TU FUNCIÓN:
-1. Proporcionar información sobre servicios
-2. Ayudar a encontrar servicios adecuados
-3. Explicar características y precios
-4. Informar sobre horarios y ubicación
-5. NO realizamos ventas directas
-
-INSTRUCCIONES:
-1. Para primera vez, usa getWelcomeMessage
-2. Para servicios específicos, usa searchServices
-3. Para horarios, usa getBusinessHours
-4. Para ubicación, usa getLocationInfo
-5. Para información general, usa getServices
-6. Responde en español
-7. Sé amable y profesional
+TYPICAL CUSTOMER QUESTIONS:
+- "What services do you offer?" → getServices
+- "Tell me about manicures" → searchServices with "manicure"
+- "What are your hours?" → getBusinessHours
+- "Where are you located?" → getLocation
+- "I want to book an appointment" → parseAppointmentDateTime then bookAppointment
+- "What are your most popular services?" → getPopularServices
+- "Do you have parking?" → getParkingInfo
+- "How do I get there?" → getDirections or getTransportInfo
 ```
 
-## 📞 Twilio Setup
+## 📞 Phone Integration
 
-1. Buy a Twilio phone number
-2. Configure the number to forward calls to your Vapi.ai agent
-3. In Twilio console, set the webhook URL to your Vapi.ai agent URL
+### Option 1: ElevenLabs Phone Integration (Recommended)
+
+1. In ElevenLabs dashboard, go to "Phone Integration"
+2. Configure your phone number
+3. Set the agent to handle incoming calls
+4. The agent will automatically use your webhook for function calls
+
+### Option 2: Custom Phone Integration
+
+If you need to integrate with a specific phone system:
+
+1. Use ElevenLabs API to handle voice interactions
+2. Send audio to ElevenLabs for processing
+3. Receive responses and play them back
+4. The webhook will handle function calls automatically
 
 ## 🚀 Deployment
 
@@ -232,15 +293,16 @@ INSTRUCCIONES:
 |----------|-------------|----------|
 | `PORT` | Server port | No (default: 3000) |
 | `NODE_ENV` | Environment | No (default: development) |
-| `VAPI_API_KEY` | Vapi.ai API key | Yes |
-| `VAPI_AGENT_ID` | Vapi.ai agent ID | Yes |
+| `ELEVENLABS_API_KEY` | ElevenLabs API key | Yes |
+| `ELEVENLABS_AGENT_ID` | ElevenLabs agent ID | Yes |
+| `API_BASE_URL` | Base URL for API calls | No (default: https://voice-salon-bot.onrender.com) |
 
 ### CORS Configuration
 
-The API is configured to accept requests from Vapi.ai domains:
-- `https://vapi.ai`
-- `https://app.vapi.ai`
-- `https://api.vapi.ai`
+The API is configured to accept requests from ElevenLabs domains:
+- `https://api.elevenlabs.io`
+- `https://elevenlabs.io`
+- `https://app.elevenlabs.io`
 
 ## 📊 API Response Format
 
@@ -321,4 +383,4 @@ For issues or questions:
 
 ---
 
-**Hera's Nails & Lashes API** - Powered by Vapi.ai & Node.js 
+**Hera's Nails & Lashes API** - Powered by ElevenLabs Conversational AI & Node.js 

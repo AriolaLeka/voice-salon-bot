@@ -11,17 +11,20 @@ const locationRouter = require('./routes/location');
 const generalRouter = require('./routes/general');
 const appointmentsRouter = require('./routes/appointments');
 
+// Import ElevenLabs integration
+const ElevenLabsIntegration = require('./elevenlabs-integration');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet());
 
-// CORS configuration for Vapi.ai
+// CORS configuration for ElevenLabs
 app.use(cors({
-  origin: ['https://vapi.ai', 'https://app.vapi.ai', 'https://api.vapi.ai'],
+  origin: ['https://api.elevenlabs.io', 'https://elevenlabs.io', 'https://app.elevenlabs.io'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key']
+  allowedHeaders: ['Content-Type', 'Authorization', 'xi-api-key']
 }));
 
 // Compression middleware
@@ -37,13 +40,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Initialize ElevenLabs integration
+const elevenLabs = new ElevenLabsIntegration();
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    service: 'TopPestanas Voice Bot API',
-    version: '1.0.0'
+    service: 'TopPestanas Voice Bot API (ElevenLabs)',
+    version: '2.0.0'
   });
 });
 
@@ -54,17 +60,25 @@ app.use('/api/location', locationRouter);
 app.use('/api/general', generalRouter);
 app.use('/api/appointments', appointmentsRouter);
 
+// ElevenLabs integration routes
+app.use('/api/elevenlabs', elevenLabs.createRouter());
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
-    message: 'TopPestanas Voice Bot API',
-    version: '1.0.0',
+    message: 'TopPestanas Voice Bot API (ElevenLabs)',
+    version: '2.0.0',
     endpoints: {
       health: '/health',
       services: '/api/services',
       hours: '/api/hours',
       location: '/api/location',
-      general: '/api/general'
+      general: '/api/general',
+      appointments: '/api/appointments',
+      elevenlabs: {
+        webhook: '/api/elevenlabs/webhook',
+        health: '/api/elevenlabs/health'
+      }
     },
     documentation: 'Check README.md for API documentation'
   });
@@ -95,11 +109,19 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 TopPestanas Voice Bot API running on port ${PORT}`);
-  console.log(`📞 Ready to handle Vapi.ai requests`);
+  console.log(`🤖 ElevenLabs Integration enabled`);
   console.log(`🌐 Health check: http://localhost:${PORT}/health`);
   console.log(`📋 API docs: http://localhost:${PORT}/`);
+  
+  // Initialize ElevenLabs agent
+  try {
+    await elevenLabs.initializeAgent();
+  } catch (error) {
+    console.error('⚠️  ElevenLabs agent initialization failed:', error.message);
+    console.log('   Make sure ELEVENLABS_API_KEY and ELEVENLABS_AGENT_ID are set correctly');
+  }
 });
 
 module.exports = app; 
