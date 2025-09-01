@@ -1,0 +1,370 @@
+{
+  "agent_configuration": {
+    "name": "Hera's Nails & Lashes Salon Assistant",
+    "description": "AI assistant for Hera's Nails & Lashes beauty salon in Valencia, Spain",
+    "voice_id": "shimmer",
+    "model_id": "eleven_multilingual_v2",
+    "voice_settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.0,
+      "use_speaker_boost": true
+    },
+    "system_prompt": "You are a helpful AI assistant for Hera's Nails & Lashes beauty salon in Valencia, Spain. You help customers with services, hours, location, and appointments. You can call functions to get real-time information about the salon.\n\nCRITICAL RULES:\n1. ALWAYS use the voice_response field from API responses when available\n2. NEVER call multiple functions for the same request\n3. For service inquiries:\n   - Use searchServices for specific services (e.g., \"manicure\", \"pedicure\", \"eyebrows\", \"eyelashes\")\n   - Use getServices for general overview (\"what services do you offer\")\n   - Use getPopularServices for popular services and packages\n   - Use getServicesByPrice for budget-related questions\n4. For appointment bookings:\n   - First call parseAppointmentDateTime to understand the request\n   - Then call bookAppointment with all required details (name, service, email)\n   - ALWAYS ask for email address to send reminders\n5. For hours/location: Use getBusinessHours, getLocation, or getLocationSummary as appropriate\n6. For general info: Use getWelcomeMessage, getAboutInfo, or getContactInfo\n7. Respond naturally and conversationally\n8. If a function returns an error, apologize and ask the user to try again\n9. Always detect language preference from the conversation and pass it to functions\n\nLANGUAGE DETECTION:\n- If customer speaks Spanish, set lang=es\n- If customer speaks English, set lang=en\n- Default to lang=en if unsure\n\nTYPICAL CUSTOMER QUESTIONS:\n- \"What services do you offer?\" → getServices\n- \"Tell me about manicures\" → searchServices with \"manicure\"\n- \"What are your hours?\" → getBusinessHours\n- \"Where are you located?\" → getLocation\n- \"I want to book an appointment\" → parseAppointmentDateTime then bookAppointment\n- \"What are your most popular services?\" → getPopularServices\n- \"Do you have parking?\" → getParkingInfo\n- \"How do I get there?\" → getDirections or getTransportInfo",
+    "initial_message": "Hello! Welcome to Hera's Nails & Lashes beauty salon in Valencia. I'm here to help you with our services, hours, location, and appointments. How can I assist you today?",
+    "conversation_end_message": "Thank you for calling Hera's Nails & Lashes. Have a wonderful day!"
+  },
+  "functions": [
+    {
+      "name": "searchServices",
+      "description": "Search for specific services by name or category. Use this when customer asks about a specific service like \"manicure\", \"pedicure\", \"eyebrows\", \"eyelashes\", \"facial\" or general terms like \"servicios\", \"tratamientos\", \"belleza\", \"todo\" (Spanish) or \"services\", \"treatments\", \"beauty\", \"everything\" (English)",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search term (e.g., \"manicure\", \"pedicure\", \"eyebrows\", \"eyelashes\", \"facial\", \"nails\", \"servicios\", \"tratamientos\", \"belleza\", \"todo\", \"services\", \"treatments\", \"beauty\", \"everything\")"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        },
+        "required": ["query"]
+      },
+      "examples": [
+        "manicure",
+        "pedicure", 
+        "eyebrows",
+        "eyelashes",
+        "facial",
+        "nails",
+        "cejas",
+        "pestañas",
+        "servicios",
+        "tratamientos",
+        "belleza",
+        "todo",
+        "services",
+        "treatments",
+        "beauty",
+        "everything"
+      ]
+    },
+    {
+      "name": "getServices",
+      "description": "Get all available services and categories. Use this when customer asks \"what services do you offer\", \"show me all services\", \"what do you do\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        }
+      }
+    },
+    {
+      "name": "getServiceCategory",
+      "description": "Get detailed information about a specific service category. Use this when customer asks for details about a specific service type",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Service category (e.g., \"manicuras\", \"pedicuras\", \"cejas\")"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        },
+        "required": ["category"]
+      }
+    },
+    {
+      "name": "getPopularServices",
+      "description": "Get popular services and special packages. Use this when customer asks \"what are your most popular services\", \"do you have packages\", \"what are your best services\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        }
+      }
+    },
+    {
+      "name": "getServicesByPrice",
+      "description": "Get services within a specific price range. Use this when customer asks \"what services do you have under X euros\", \"show me affordable services\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "string",
+            "description": "Minimum price in euros"
+          },
+          "max": {
+            "type": "string",
+            "description": "Maximum price in euros"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        },
+        "required": ["min", "max"]
+      }
+    },
+    {
+      "name": "getBusinessHours",
+      "description": "Get business hours and current status. Use this when customer asks \"what are your hours\", \"are you open\", \"when do you close\", \"what time do you open\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        }
+      }
+    },
+    {
+      "name": "getWeeklyHours",
+      "description": "Get full weekly schedule. Use this when customer asks \"what are your hours this week\", \"show me your schedule\", \"when are you open this week\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        }
+      }
+    },
+    {
+      "name": "getTodayHours",
+      "description": "Get today's specific hours and current status. Use this when customer asks \"are you open today\", \"what time do you close today\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "getAllHours",
+      "description": "Get complete business hours information. Use this when customer asks \"tell me all your hours\", \"what are your business hours\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "getLocation",
+      "description": "Get business location and address. Use this when customer asks \"where are you located\", \"what's your address\", \"how do I get there\", \"where can I find you\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        }
+      }
+    },
+    {
+      "name": "getAddress",
+      "description": "Get specific address information. Use this when customer asks \"what's your exact address\", \"where are you exactly\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "getDirections",
+      "description": "Get directions and transport information. Use this when customer asks \"how do I get there\", \"what's the best way to get there\", \"is it easy to find\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "getTransportInfo",
+      "description": "Get public transport information. Use this when customer asks \"how do I get there by bus\", \"is there a metro nearby\", \"what transport options do I have\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "getParkingInfo",
+      "description": "Get parking information. Use this when customer asks \"is there parking\", \"where can I park\", \"do you have parking\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "getLocationSummary",
+      "description": "Get complete location summary with transport and parking. Use this when customer asks \"tell me about your location\", \"how do I get to your salon\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        }
+      }
+    },
+    {
+      "name": "parseAppointmentDateTime",
+      "description": "Parse date and time from natural language for appointment booking. Use this first when customer wants to book an appointment",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Natural language text containing date and time (e.g., \"tomorrow at 2 PM\", \"Friday at 10 AM\")"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        },
+        "required": ["text"]
+      },
+      "examples": [
+        "tomorrow at 2 PM",
+        "Friday at 10 AM",
+        "next Monday at 3:30 PM",
+        "mañana a las 2",
+        "el viernes a las 10"
+      ]
+    },
+    {
+      "name": "bookAppointment",
+      "description": "Book an appointment with parsed date, time, and customer information. Use this after parsing date/time and collecting customer details",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "dateTimeText": {
+            "type": "string",
+            "description": "Natural language date and time (e.g., \"tomorrow at 2 PM\")"
+          },
+          "clientName": {
+            "type": "string",
+            "description": "Customer name"
+          },
+          "service": {
+            "type": "string",
+            "description": "Service requested (e.g., \"manicure\", \"pedicure\", \"eyebrows\")"
+          },
+          "voiceEmail": {
+            "type": "string",
+            "description": "Email address for reminders (e.g., \"john at gmail dot com\")"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number (optional)"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        },
+        "required": ["dateTimeText", "clientName", "service", "voiceEmail"]
+      }
+    },
+    {
+      "name": "getAvailableTimes",
+      "description": "Get available appointment times for a specific date. Use this when customer asks \"what times do you have available\", \"when can I come in\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date in YYYY-MM-DD format"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        },
+        "required": ["date"]
+      }
+    },
+    {
+      "name": "getWelcomeMessage",
+      "description": "Get welcome message and business overview. Use this for greetings or when customer asks \"tell me about your business\", \"what do you do\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        }
+      }
+    },
+    {
+      "name": "getAboutInfo",
+      "description": "Get detailed business information and service summary. Use this when customer asks \"what do you do\", \"tell me more about your salon\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "lang": {
+            "type": "string",
+            "description": "Language preference (en/es)",
+            "enum": ["en", "es"]
+          }
+        }
+      }
+    },
+    {
+      "name": "getServicesOverview",
+      "description": "Get comprehensive services overview with categories and pricing. Use this when customer asks \"what services do you offer\", \"tell me about your services\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "getContactInfo",
+      "description": "Get complete contact information including address, hours, and transport. Use this when customer asks \"how can I contact you\", \"what's your contact information\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "getBusinessStatus",
+      "description": "Get current business status (open/closed) and today's information. Use this when customer asks \"are you open\", \"what's your status today\"",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ],
+  "webhook_configuration": {
+    "url": "https://voice-salon-bot.onrender.com/api/elevenlabs/webhook",
+    "events": ["function_calls", "tools", "conversation_start", "conversation_end"]
+  },
+  "connection_endpoints": {
+    "signed_url": "https://voice-salon-bot.onrender.com/api/elevenlabs/signed-url",
+    "conversation_token": "https://voice-salon-bot.onrender.com/api/elevenlabs/conversation-token"
+  }
+}

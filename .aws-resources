@@ -1,0 +1,3 @@
+VPC_ID=vpc-003d01e655deb7266
+SUBNET_IDS=subnet-0a7c5c102e2f33046	subnet-0fd9a3c9f1bcda05e	subnet-0a87b16f578fbd6b8
+SG_ID=sg-0216fc3171b613cf4

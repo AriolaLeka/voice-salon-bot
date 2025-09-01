@@ -17,7 +17,7 @@ function detectLanguage(req) {
     }
   }
   
-  // Default to English for Vapi.ai calls
+  // Default to English for ElevenLabs calls
   return 'en';
 }
 
