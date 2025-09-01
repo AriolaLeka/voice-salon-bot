@@ -150,7 +150,7 @@ class ElevenLabsIntegration {
 
   // Execute individual function
   async executeFunction(functionName, args) {
-    const baseUrl = process.env.API_BASE_URL || 'https://voice-salon-bot.onrender.com';
+    const baseUrl = process.env.API_BASE_URL || 'https://0txffi6ln1.execute-api.eu-west-1.amazonaws.com/prod';
     
     // Map function names to API endpoints
     const functionMap = {

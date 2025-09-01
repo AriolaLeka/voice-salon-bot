@@ -301,101 +301,25 @@ resource "aws_ecs_service" "service_bot" {
   }
 }
 
-# API Gateway
-resource "aws_api_gateway_rest_api" "service_bot" {
-  name        = "${local.name_prefix}-api"
-  description = "Service Bot API Gateway"
+# API Gateway Resources are now defined in organized files:
+# - main.tf (this file) - contains the core API Gateway resource
+# - health.tf - health endpoints
+# - services.tf - services and all sub-endpoints
+# - hours.tf - hours and all sub-endpoints
+# - location.tf - location and all sub-endpoints
+# - general.tf - general and all sub-endpoints
+# - appointments.tf - appointments and all sub-endpoints
+# - elevenlabs.tf - ElevenLabs endpoints
 
-  endpoint_configuration {
-    types = ["REGIONAL"]
-  }
-
-  tags = {
-    Name = "${local.name_prefix}-api"
-  }
+module "api_gateway" {
+  source       = "./api-gateway"
+  name_prefix  = local.name_prefix
+  lb_dns_name  = aws_lb.service_bot.dns_name
+  aws_region   = var.aws_region
+  stage_name   = "prod"
 }
 
-# API Gateway Resources
-resource "aws_api_gateway_resource" "root" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-  parent_id   = aws_api_gateway_rest_api.service_bot.root_resource_id
-  path_part   = "health"
-}
-
-resource "aws_api_gateway_resource" "api" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-  parent_id   = aws_api_gateway_rest_api.service_bot.root_resource_id
-  path_part   = "api"
-}
-
-resource "aws_api_gateway_resource" "elevenlabs" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-  parent_id   = aws_api_gateway_resource.api.id
-  path_part   = "elevenlabs"
-}
-
-resource "aws_api_gateway_resource" "webhook" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-  parent_id   = aws_api_gateway_resource.elevenlabs.id
-  path_part   = "webhook"
-}
-
-resource "aws_api_gateway_resource" "elevenlabs_health" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-  parent_id   = aws_api_gateway_resource.elevenlabs.id
-  path_part   = "health"
-}
-
-resource "aws_api_gateway_resource" "services" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-  parent_id   = aws_api_gateway_resource.api.id
-  path_part   = "services"
-}
-
-resource "aws_api_gateway_resource" "hours" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-  parent_id   = aws_api_gateway_resource.api.id
-  path_part   = "hours"
-}
-
-resource "aws_api_gateway_resource" "location" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-  parent_id   = aws_api_gateway_resource.api.id
-  path_part   = "location"
-}
-
-# API Gateway Methods and Integrations are defined in api-gateway.tf
-
-# API Gateway Stage
-resource "aws_api_gateway_stage" "service_bot" {
-  deployment_id = aws_api_gateway_deployment.service_bot.id
-  rest_api_id   = aws_api_gateway_rest_api.service_bot.id
-  stage_name    = "prod"
-
-  tags = {
-    Name = "${local.name_prefix}-stage"
-  }
-}
-
-# API Gateway Deployment
-resource "aws_api_gateway_deployment" "service_bot" {
-  rest_api_id = aws_api_gateway_rest_api.service_bot.id
-
-  depends_on = [
-    aws_api_gateway_integration.health_integration,
-    aws_api_gateway_integration.services_integration,
-    aws_api_gateway_integration.hours_integration,
-    aws_api_gateway_integration.location_integration,
-    aws_api_gateway_integration.webhook_integration,
-    aws_api_gateway_integration.elevenlabs_health_integration,
-    aws_api_gateway_integration.root_integration,
-    aws_lb.service_bot
-  ]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+# API Gateway Stage and Deployment are now defined in the organized files
 
 # Outputs
 output "ecr_repository_url" {
@@ -413,15 +337,7 @@ output "ecs_service_name" {
   value       = aws_ecs_service.service_bot.name
 }
 
-output "api_gateway_url" {
-  description = "API Gateway invoke URL"
-  value       = "${aws_api_gateway_rest_api.service_bot.execution_arn}/*"
-}
-
-output "api_gateway_invoke_url" {
-  description = "API Gateway invoke URL"
-  value       = "https://${aws_api_gateway_rest_api.service_bot.id}.execute-api.${var.aws_region}.amazonaws.com/prod"
-}
+# API Gateway outputs are now defined in the organized files
 
 output "load_balancer_dns" {
   description = "Load Balancer DNS name"

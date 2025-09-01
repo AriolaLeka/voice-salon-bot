@@ -360,11 +360,11 @@
     }
   ],
   "webhook_configuration": {
-    "url": "https://voice-salon-bot.onrender.com/api/elevenlabs/webhook",
+    "url": "https://0txffi6ln1.execute-api.eu-west-1.amazonaws.com/prod/api/elevenlabs/webhook",
     "events": ["function_calls", "tools", "conversation_start", "conversation_end"]
   },
   "connection_endpoints": {
-    "signed_url": "https://voice-salon-bot.onrender.com/api/elevenlabs/signed-url",
-    "conversation_token": "https://voice-salon-bot.onrender.com/api/elevenlabs/conversation-token"
+    "signed_url": "https://0txffi6ln1.execute-api.eu-west-1.amazonaws.com/prod/api/elevenlabs/signed-url",
+    "conversation_token": "https://0txffi6ln1.execute-api.eu-west-1.amazonaws.com/prod/api/elevenlabs/conversation-token"
   }
 }
