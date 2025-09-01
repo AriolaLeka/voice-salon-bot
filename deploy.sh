@@ -204,6 +204,12 @@ show_deployment_info() {
     echo "1. Update your ElevenLabs webhook URL to: $(terraform output -raw api_gateway_invoke_url)/api/elevenlabs/webhook"
     echo "2. Test the webhook with ElevenLabs"
     echo "3. Monitor the service in AWS Console"
+    echo ""
+    print_status "Testing & Debugging:"
+    echo "  • Load Balancer URL: $(terraform output -raw load_balancer_url)"
+    echo "  • ECS Cluster: $(terraform output -raw ecs_cluster_name)"
+    echo "  • ECS Service: $(terraform output -raw ecs_service_name)"
+    echo "  • CloudWatch Logs: /ecs/$(terraform output -raw ecs_service_name)"
 }
 
 # Cleanup function
@@ -241,6 +247,13 @@ main() {
     echo ""
     
     show_deployment_info
+    echo ""
+    
+    # Show testing instructions
+    print_status "Testing Instructions:"
+    echo "  • Test all endpoints: $0 --test-only"
+    echo "  • Test Load Balancer: $0 --test-lb"
+    echo "  • Re-run tests: $0 --test-only"
     echo ""
     
     cleanup
@@ -306,6 +319,11 @@ case "${1:-}" in
         test_deployment
         echo ""
         show_deployment_info
+        exit 0
+        ;;
+    "--test-lb")
+        print_status "Testing Load Balancer directly..."
+        test_load_balancer
         exit 0
         ;;
     "")
