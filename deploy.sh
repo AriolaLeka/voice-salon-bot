@@ -117,20 +117,75 @@ test_deployment() {
     
     print_status "API Gateway URL: $API_URL"
     
-    # Test health endpoint
-    print_status "Testing health endpoint..."
-    if curl -f "${API_URL}/health" > /dev/null 2>&1; then
-        print_success "Health endpoint is working!"
+    # Wait a bit more for the service to be fully ready
+    print_status "Waiting for service to be fully ready..."
+    sleep 30
+    
+    # Test all API endpoints
+    local endpoints=(
+        "/health"
+        "/"
+        "/api/services"
+        "/api/hours"
+        "/api/location"
+        "/api/general"
+        "/api/appointments"
+        "/api/elevenlabs/health"
+    )
+    
+    local success_count=0
+    local total_endpoints=${#endpoints[@]}
+    
+    print_status "Testing $total_endpoints API endpoints..."
+    echo ""
+    
+    for endpoint in "${endpoints[@]}"; do
+        print_status "Testing: $endpoint"
+        
+        # Test with timeout and capture response
+        if response=$(curl -s -w "%{http_code}" --max-time 10 "${API_URL}${endpoint}" 2>/dev/null); then
+            http_code="${response: -3}"
+            response_body="${response%???}"
+            
+            if [ "$http_code" -eq 200 ] || [ "$http_code" -eq 404 ]; then
+                print_success "✅ $endpoint - HTTP $http_code"
+                ((success_count++))
+            else
+                print_warning "⚠️  $endpoint - HTTP $http_code"
+            fi
+        else
+            print_error "❌ $endpoint - Connection failed"
+        fi
+        
+        # Small delay between requests
+        sleep 2
+    done
+    
+    echo ""
+    print_status "API Testing Summary:"
+    echo "  Successful: $success_count/$total_endpoints endpoints"
+    
+    if [ $success_count -eq $total_endpoints ]; then
+        print_success "🎉 All API endpoints are working correctly!"
+    elif [ $success_count -gt 0 ]; then
+        print_warning "⚠️  Some endpoints are working, but $((total_endpoints - success_count)) failed"
+        print_status "This might be normal during initial deployment. Wait a few minutes and test again."
     else
-        print_warning "Health endpoint not responding yet (may need a few minutes)"
+        print_error "❌ No endpoints are responding. Check ECS service status and logs."
     fi
     
-    # Test other endpoints
-    print_status "Testing services endpoint..."
-    if curl -f "${API_URL}/api/services" > /dev/null 2>&1; then
-        print_success "Services endpoint is working!"
+    # Test POST endpoint (ElevenLabs webhook)
+    echo ""
+    print_status "Testing POST endpoint (ElevenLabs webhook)..."
+    if response=$(curl -s -w "%{http_code}" --max-time 10 -X POST -H "Content-Type: application/json" -d '{"test": "webhook"}' "${API_URL}/api/elevenlabs/webhook" 2>/dev/null); then
+        http_code="${response: -3}"
+        if [ "$http_code" -eq 200 ] || [ "$http_code" -eq 400 ] || [ "$http_code" -eq 404 ]; then
+            print_success "✅ ElevenLabs webhook endpoint - HTTP $http_code"
+        else
+            print_warning "⚠️  ElevenLabs webhook endpoint - HTTP $http_code"
+        fi
     else
-        print_warning "Services endpoint not responding yet"
+        print_error "❌ ElevenLabs webhook endpoint - Connection failed"
     fi
     
     print_success "Deployment testing completed!"
@@ -193,6 +248,29 @@ main() {
     print_success "Service Bot deployment completed successfully! 🎉"
 }
 
+# Test load balancer directly (useful for debugging)
+test_load_balancer() {
+    print_status "Testing Load Balancer directly..."
+    
+    # Get the Load Balancer URL
+    LB_URL=$(terraform output -raw load_balancer_url)
+    
+    print_status "Load Balancer URL: $LB_URL"
+    
+    # Test health endpoint directly on LB
+    print_status "Testing health endpoint on Load Balancer..."
+    if response=$(curl -s -w "%{http_code}" --max-time 10 "${LB_URL}/health" 2>/dev/null); then
+        http_code="${response: -3}"
+        if [ "$http_code" -eq 200 ]; then
+            print_success "✅ Load Balancer health endpoint - HTTP $http_code"
+        else
+            print_warning "⚠️  Load Balancer health endpoint - HTTP $http_code"
+        fi
+    else
+        print_error "❌ Load Balancer health endpoint - Connection failed"
+    fi
+}
+
 # Show usage
 show_usage() {
     echo "Usage: $0 [OPTIONS]"
@@ -201,11 +279,13 @@ show_usage() {
     echo "  --help, -h     Show this help message"
     echo "  --plan-only     Only create Terraform plan (don't apply)"
     echo "  --test-only     Only test existing deployment"
+    echo "  --test-lb       Test Load Balancer directly (bypass API Gateway)"
     echo ""
     echo "Examples:"
     echo "  $0              # Full deployment"
     echo "  $0 --plan-only  # Only plan"
     echo "  $0 --test-only  # Only test"
+    echo "  $0 --test-lb    # Test Load Balancer directly"
 }
 
 # Parse command line arguments
@@ -222,7 +302,9 @@ case "${1:-}" in
         exit 0
         ;;
     "--test-only")
+        print_status "Testing existing deployment..."
         test_deployment
+        echo ""
         show_deployment_info
         exit 0
         ;;
