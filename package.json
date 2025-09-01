@@ -1,7 +1,7 @@
 {
   "name": "voice-salon-bot",
   "version": "2.0.0",
-  "description": "Voice-driven salon bot backend for TopPestanas using ElevenLabs Conversational AI",
+  "description": "Voice-driven salon bot backend for service bot using ElevenLabs Conversational AI",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -28,7 +28,7 @@
     "conversational-ai",
     "beauty"
   ],
-  "author": "TopPestanas",
+  "author": "service bot",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.11.0",

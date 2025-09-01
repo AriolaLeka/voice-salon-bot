@@ -48,7 +48,7 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    service: 'TopPestanas Voice Bot API (ElevenLabs)',
+    service: 'service bot Voice Bot API (ElevenLabs)',
     version: '2.0.0'
   });
 });
@@ -66,7 +66,7 @@ app.use('/api/elevenlabs', elevenLabs.createRouter());
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
-    message: 'TopPestanas Voice Bot API (ElevenLabs)',
+    message: 'service bot Voice Bot API (ElevenLabs)',
     version: '2.0.0',
     endpoints: {
       health: '/health',
@@ -110,7 +110,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, async () => {
-  console.log(`🚀 TopPestanas Voice Bot API running on port ${PORT}`);
+  console.log(`🚀 service bot Voice Bot API running on port ${PORT}`);
   console.log(`🤖 ElevenLabs Integration enabled`);
   console.log(`🌐 Health check: http://localhost:${PORT}/health`);
   console.log(`📋 API docs: http://localhost:${PORT}/`);
