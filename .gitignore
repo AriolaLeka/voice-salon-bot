@@ -17,3 +17,6 @@ credential.json
 *.pfx
 *.crt
 *.cer
+
+.terraform/
+.terraform.lock.hcl
