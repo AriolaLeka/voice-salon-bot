@@ -348,3 +348,14 @@ output "load_balancer_url" {
   description = "Load Balancer URL"
   value       = "http://${aws_lb.service_bot.dns_name}"
 }
+
+# Expose API Gateway URLs from module
+output "api_gateway_invoke_url" {
+  description = "API Gateway invoke URL"
+  value       = module.api_gateway.api_gateway_invoke_url
+}
+
+output "api_gateway_execute_arn" {
+  description = "API Gateway execute ARN"
+  value       = module.api_gateway.api_gateway_url
+}
