@@ -1,4 +1,4 @@
-# 🚀 Service Bot - Voice Salon Assistant
+ # 🚀 Service Bot - Voice Salon Assistant
 
 An AI-powered voice bot for salon services, built with Node.js and ElevenLabs integration, deployed on AWS using Terraform.
 
