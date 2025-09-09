@@ -171,6 +171,7 @@ class ElevenLabsIntegration {
       'getLocationSummary': `${baseUrl}/api/location/summary`,
       'parseAppointmentDateTime': `${baseUrl}/api/appointments/parse-datetime`,
       'bookAppointment': `${baseUrl}/api/appointments/book`,
+      'sendAppointmentEmail': `${baseUrl}/api/appointments/send-email`,
       'getAvailableTimes': `${baseUrl}/api/appointments/available-times`,
       'getWelcomeMessage': `${baseUrl}/api/general/welcome`,
       'getAboutInfo': `${baseUrl}/api/general/about`,
@@ -185,7 +186,7 @@ class ElevenLabsIntegration {
     }
 
     // Determine HTTP method based on function
-    const isPostMethod = ['parseAppointmentDateTime', 'bookAppointment'].includes(functionName);
+    const isPostMethod = ['parseAppointmentDateTime', 'bookAppointment', 'sendAppointmentEmail'].includes(functionName);
     const method = isPostMethod ? 'POST' : 'GET';
 
     const config = {

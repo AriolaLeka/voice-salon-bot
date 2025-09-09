@@ -10,7 +10,7 @@
     "test:elevenlabs": "node test-elevenlabs.js",
     "test:mock": "node test-elevenlabs-mock.js",
     "docker:build": "docker build -t service-bot .",
-"docker:run": "docker run -p 3000:3000 --env-file .env service-bot",
+    "docker:run": "docker run -p 3000:3000 --env-file .env service-bot",
     "docker:compose": "docker-compose up",
     "docker:compose:prod": "docker-compose -f docker-compose.prod.yml up -d",
     "docker:test": "./build-and-deploy.sh test",
@@ -38,7 +38,8 @@
     "express": "^4.18.2",
     "googleapis": "^128.0.0",
     "helmet": "^7.1.0",
-    "moment": "^2.30.1"
+    "moment": "^2.30.1",
+    "resend": "^6.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

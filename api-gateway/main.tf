@@ -238,6 +238,12 @@ resource "aws_api_gateway_resource" "appointments_parse_datetime" {
   path_part   = "parse-datetime"
 }
 
+resource "aws_api_gateway_resource" "appointments_send_email" {
+  rest_api_id = aws_api_gateway_rest_api.service_bot.id
+  parent_id   = aws_api_gateway_resource.appointments.id
+  path_part   = "send-email"
+}
+
 # API Gateway Stage
 resource "aws_api_gateway_stage" "service_bot" {
   deployment_id = aws_api_gateway_deployment.service_bot.id
@@ -296,6 +302,7 @@ resource "aws_api_gateway_deployment" "service_bot" {
     aws_api_gateway_integration.appointments_available_times_integration,
     aws_api_gateway_integration.appointments_available_times_date_integration,
     aws_api_gateway_integration.appointments_parse_datetime_integration,
+    aws_api_gateway_integration.appointments_send_email_integration,
     
     # ElevenLabs
     aws_api_gateway_integration.webhook_integration,

@@ -6,10 +6,13 @@ const { detectLanguage } = require('../utils/languageUtils');
 const { 
   parseAppointmentDateTime, 
   validateAppointmentTime, 
-  createCalendarEvent, 
-  generateAppointmentResponse,
   parseEmailFromVoice
 } = require('../utils/appointmentUtils');
+const { 
+  sendAppointmentEmail, 
+  sendSalonNotification, 
+  generateEmailBookingResponse 
+} = require('../utils/emailUtils');
 
 // Load schedule data for validation
 let scheduleData = null;
@@ -31,7 +34,7 @@ async function loadScheduleData() {
 // POST /api/appointments/book - Book an appointment
 router.post('/book', async (req, res) => {
   try {
-    const { clientName, service, dateTimeText, phone, email, voiceEmail } = req.body;
+    const { clientName, service, dateTimeText, phone, email, voiceEmail, notes } = req.body;
     const language = detectLanguage(req);
     
     if (!clientName || !service || !dateTimeText) {
@@ -46,6 +49,17 @@ router.post('/book', async (req, res) => {
     let parsedEmail = email;
     if (voiceEmail && !email) {
       parsedEmail = parseEmailFromVoice(voiceEmail);
+    }
+
+    // Validate email is provided
+    if (!parsedEmail || parsedEmail === 'Not provided') {
+      return res.json({
+        success: false,
+        voice_response: language === 'es' 
+          ? `Necesito tu email para enviarte la confirmación de la cita. Por favor, proporciona tu dirección de email.`
+          : `I need your email to send you the appointment confirmation. Please provide your email address.`,
+        needs_clarification: true
+      });
     }
 
     // Parse date and time from natural language
@@ -69,12 +83,12 @@ router.post('/book', async (req, res) => {
       let errorMessage;
       if (validation.reason === 'closed_on_day') {
         errorMessage = language === 'es' 
-          ? `Lo siento, estamos cerrados ese día. Nuestros horarios son de lunes a viernes de 10:00 a 18:00.`
-          : `Sorry, we're closed on that day. Our hours are Monday to Friday from 10:00 to 18:00.`;
+          ? `Lo siento, estamos cerrados ese día. Nuestros horarios son de lunes a viernes de 09:30 a 20:30 y sábados de 09:30 a 14:30.`
+          : `Sorry, we're closed on that day. Our hours are Monday to Friday 09:30-20:30 and Saturday 09:30-14:30.`;
       } else if (validation.reason === 'outside_hours') {
         errorMessage = language === 'es'
-          ? `Lo siento, ese horario está fuera de nuestro horario de atención. Estamos abiertos de 10:00 a 18:00.`
-          : `Sorry, that time is outside our business hours. We're open from 10:00 to 18:00.`;
+          ? `Lo siento, ese horario está fuera de nuestro horario de atención. Estamos abiertos de lunes a viernes de 09:30 a 20:30 y sábados de 09:30 a 14:30.`
+          : `Sorry, that time is outside our business hours. We're open Monday to Friday 09:30-20:30 and Saturday 09:30-14:30.`;
       }
       
       return res.json({
@@ -86,37 +100,46 @@ router.post('/book', async (req, res) => {
 
     // Create appointment data
     const appointmentData = {
-      clientName,
-      service,
+      name: clientName,
+      service: service,
       date: parsedDateTime.date,
       time: parsedDateTime.time,
       phone: phone || 'Not provided',
-      email: parsedEmail || 'Not provided'
+      email: parsedEmail,
+      notes: notes || service // Use provided notes or fallback to service name
     };
 
-    // Create Google Calendar event
-    const calendarResult = await createCalendarEvent(appointmentData);
+    // Send confirmation email to client
+    const emailResult = await sendAppointmentEmail(appointmentData, language);
     
-    if (!calendarResult.success) {
+    if (!emailResult.success) {
+      console.error('Failed to send email:', emailResult.error);
       return res.json({
         success: false,
         voice_response: language === 'es'
-          ? `Lo siento, hubo un problema al crear la cita. Por favor, intenta de nuevo o contacta con nosotros directamente.`
-          : `Sorry, there was a problem creating the appointment. Please try again or contact us directly.`
+          ? `Lo siento, hubo un problema al enviar el email de confirmación. Por favor, intenta de nuevo o contacta con nosotros directamente.`
+          : `Sorry, there was a problem sending the confirmation email. Please try again or contact us directly.`
       });
     }
 
+    // Send notification email to salon (optional)
+    try {
+      await sendSalonNotification(appointmentData, language);
+    } catch (error) {
+      console.error('Failed to send salon notification:', error);
+      // Don't fail the booking if salon notification fails
+    }
+
     // Generate voice response
-    const response = generateAppointmentResponse(appointmentData, language);
+    const response = generateEmailBookingResponse(appointmentData, language);
 
     res.json({
       success: true,
       voice_response: response.confirmation,
       appointment: {
         ...appointmentData,
-        calendar_event_id: calendarResult.eventId,
-        calendar_url: calendarResult.eventUrl,
-        calendar_note: calendarResult.note
+        email_id: emailResult.emailId,
+        email_sent: true
       }
     });
 
@@ -300,6 +323,69 @@ router.post('/parse-datetime', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Error parsing datetime'
+    });
+  }
+});
+
+// POST /api/appointments/send-email - Send appointment email (for ElevenLabs function)
+router.post('/send-email', async (req, res) => {
+  try {
+    const { name, date, time, email, notes } = req.body;
+    const language = detectLanguage(req);
+    
+    if (!name || !date || !time || !email) {
+      return res.status(400).json({
+        success: false,
+        error: language === 'es' ? 'Faltan datos requeridos' : 'Missing required data',
+        required: ['name', 'date', 'time', 'email']
+      });
+    }
+
+    // Create appointment data for email
+    const appointmentData = {
+      name,
+      date,
+      time,
+      email,
+      notes: notes || 'Service details not specified'
+    };
+
+    // Send confirmation email to client
+    const emailResult = await sendAppointmentEmail(appointmentData, language);
+    
+    if (!emailResult.success) {
+      return res.json({
+        success: false,
+        voice_response: language === 'es'
+          ? `Lo siento, hubo un problema al enviar el email de confirmación.`
+          : `Sorry, there was a problem sending the confirmation email.`,
+        error: emailResult.error
+      });
+    }
+
+    // Send notification email to salon (optional)
+    try {
+      await sendSalonNotification(appointmentData, language);
+    } catch (error) {
+      console.error('Failed to send salon notification:', error);
+      // Don't fail the email sending if salon notification fails
+    }
+
+    // Generate voice response
+    const response = generateEmailBookingResponse(appointmentData, language);
+
+    res.json({
+      success: true,
+      voice_response: response.confirmation,
+      email_sent: true,
+      email_id: emailResult.emailId
+    });
+
+  } catch (error) {
+    console.error('Error sending appointment email:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error sending appointment email'
     });
   }
 });

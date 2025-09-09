@@ -189,6 +189,14 @@ resource "aws_ecs_task_definition" "service_bot" {
         {
           name      = "ELEVENLABS_AGENT_ID"
           valueFrom = "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:elevenlabs-agent-id"
+        },
+        {
+          name      = "RESEND_API_KEY"
+          valueFrom = "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:resend-api-key"
+        },
+        {
+          name      = "SALON_EMAIL"
+          valueFrom = "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:salon-email"
         }
       ]
 
