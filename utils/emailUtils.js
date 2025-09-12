@@ -167,7 +167,7 @@ async function sendAppointmentEmail(appointmentData, language = 'en') {
     
     const emailData = {
       from: 'AtiendeBot <info@atiendebot.com>', // Using your verified email
-      to: ['atiendebot@gmail.com','bepitic@gmail.com','ariolaleka18@gmail.com'],
+      to: [appointmentData.email], // Send confirmation email to the client
       subject: template.subject,
       html: template.html(appointmentData)
     };
@@ -242,15 +242,14 @@ async function sendSalonNotification(appointmentData, language = 'en') {
     
     const emailData = {
       from: 'AtiendeBot <info@atiendebot.com>', // Using your verified email
-      to: ['atiendebot@gmail.com','bepitic@gmail.com','ariolaleka18@gmail.com'],
-      //to: [process.env.SALON_EMAIL],
+      to: [process.env.SALON_EMAIL || 'atiendebot@gmail.com'], // Send salon notification to the salon email (fallback to  atiende@gmail.com)
       subject: subject,
       html: html
     };
     
     const response = await resend.emails.send(emailData);
     
-    console.log('✅ Salon notification sent successfully');
+    console.log('✅ Salon notification sent successfully to:', process.env.SALON_EMAIL || 'atiendebot@gmail.com');
     
     return {
       success: true,
