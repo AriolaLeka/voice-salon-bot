@@ -192,11 +192,11 @@ resource "aws_ecs_task_definition" "service_bot" {
         },
         {
           name      = "RESEND_API_KEY"
-          valueFrom = "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:resend-api-key"
+          valueFrom = "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:resend"
         },
         {
           name      = "SALON_EMAIL"
-          valueFrom = "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:salon-email"
+          valueFrom = "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:emailsalon"
         }
       ]
 

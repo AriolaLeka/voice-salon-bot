@@ -149,20 +149,25 @@ async function sendAppointmentEmail(appointmentData, language = 'en') {
   try {
     console.log('📧 Sending appointment email for:', appointmentData);
     
-    // Check if Resend is properly configured
-    if (!process.env.RESEND_API_KEY) {
-      console.log('❌ Resend API key not configured - skipping email sending');
-      return {
-        success: false,
-        error: 'Resend API key not configured'
-      };
-    }
     
+    // Debug: Show API key (partially masked for security)
+    const apiKey = process.env.RESEND_API_KEY;
+    const maskedKey = apiKey;
+    console.log('🔑 Resend API Key (masked):', maskedKey);
+    console.log('🔑 API Key length:', apiKey ? apiKey.length : 0);
+      // Check if Resend is properly configured
+      if (!process.env.RESEND_API_KEY) {
+        console.log('❌ Resend API key not configured - skipping email sending');
+        return {
+          success: false,
+          error: 'Resend API key not configured'
+        };
+      } 
     const template = emailTemplates[language] || emailTemplates.en;
     
     const emailData = {
-      from: 'Hera\'s Nails & Lashes <atiendebot@gmail.com>', // Using your verified email
-      to: [appointmentData.email],
+      from: 'AtiendeBot <info@atiendebot.com>', // Using your verified email
+      to: ['atiendebot@gmail.com','bepitic@gmail.com','ariolaleka18@gmail.com'],
       subject: template.subject,
       html: template.html(appointmentData)
     };
@@ -170,7 +175,15 @@ async function sendAppointmentEmail(appointmentData, language = 'en') {
     console.log('📤 Sending email to:', appointmentData.email);
     
     const response = await resend.emails.send(emailData);
-    
+    console.log('Email response:', response);
+    // Check for errors in the response
+    if (!response.data || response.error) {
+      console.error('❌ Error in email response:', response.error);
+      return {
+        success: false,
+        error: response.error || 'Unknown error occurred while sending email'
+      };
+    }
     console.log('✅ Email sent successfully');
     console.log('Email ID:', response.data?.id);
     
@@ -183,10 +196,19 @@ async function sendAppointmentEmail(appointmentData, language = 'en') {
   } catch (error) {
     console.error('❌ Error sending appointment email:', error);
     console.error('Error details:', error.message);
+    console.error('Error response:', error.response?.data);
+    console.error('Error status:', error.response?.status);
+    console.error('Error headers:', error.response?.headers);
+    
+    // Debug: Show API key again in case of error
+    const apiKey = process.env.RESEND_API_KEY;
+    const maskedKey = apiKey ? `${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}` : 'NOT_SET';
+    console.error('🔑 API Key during error (masked):', maskedKey);
     
     return {
       success: false,
-      error: error.message
+      error: error.message,
+      details: error.response?.data
     };
   }
 }
@@ -219,8 +241,9 @@ async function sendSalonNotification(appointmentData, language = 'en') {
     `;
     
     const emailData = {
-      from: 'Hera\'s Nails & Lashes <atiendebot@gmail.com>',
-      to: [process.env.SALON_EMAIL],
+      from: 'AtiendeBot <info@atiendebot.com>', // Using your verified email
+      to: ['atiendebot@gmail.com','bepitic@gmail.com','ariolaleka18@gmail.com'],
+      //to: [process.env.SALON_EMAIL],
       subject: subject,
       html: html
     };
